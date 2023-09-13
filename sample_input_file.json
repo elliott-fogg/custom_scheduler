@@ -1,0 +1,47 @@
+{
+    "start_time": "2019-04-16T02:46:30.124810Z",
+    "slicesize": 300,
+    "telescopes": [
+        "Telescope_1",
+        "Telescope_2"
+    ],
+    "proposals": [
+        {
+            "name": "Proposal_1",
+            "priority": 45
+        }
+    ],
+    "scheduled_downtime": [
+        {
+            "start": "2019-04-16T02:46:30.124810Z",
+            "end": "2019-04-16T02:46:30.124810Z",
+            "telescope": "Telescope_1",
+            "when_scheduled": null
+        }
+    ],
+    "surprise_downtime": [
+        {
+            "start": "2019-04-16T02:46:30.124610Z",
+            "end": "2019-04-16T02:46:30.124610Z",
+            "telescope": "Telescope_1"
+        }
+    ],
+    "request_blocks": [
+        {
+            "time_of_input": "2019-04-16T02:46:30.124610Z",
+            "requests": [
+                {
+                    "duration": 600,
+                    "windows": [
+                        {
+                            "start": "DATETIME",
+                            "end": "DATETIME",
+                            "telescope": "Telescope_1"
+                        }
+                    ],
+                    "proposal_id": "Proposal_1"
+                }
+            ]
+        }
+    ]
+}
