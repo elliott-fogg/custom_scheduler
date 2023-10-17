@@ -1,9 +1,0 @@
-numpy
-python-dateutil
-unidecode
-scipy
-lcogt_logging
-rise_set
-retry
-time_intervals
-gurobipy
