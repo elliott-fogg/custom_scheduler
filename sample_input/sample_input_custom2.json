@@ -1,0 +1,120 @@
+{
+  "input_parameters": {
+    "start_time": 0,
+    "slice_size": 300,
+    "horizon": 28800,
+    "resources": {
+      "t1": [
+        {
+          "start": 0,
+          "end": 10000
+        },
+        {
+          "start": 12500,
+          "end": 28800
+        }
+      ]
+    },
+    "proposals": {
+      "proposal_1": {"tac_priority": 30},
+      "proposal_2": {"tac_priority": 20}
+    }
+  },
+  "requests": {
+    "0": {
+      "windows": {
+        "t1": [
+          {
+            "start": 0,
+            "end": 5000
+          }
+        ]
+      },
+      "duration": 1999,
+      "proposal": "proposal_1",
+      "resID": 0
+    },
+    "1": {
+      "windows": {
+        "t1": [
+          {
+            "start": 0,
+            "end": 5000
+          }
+        ]
+      },
+      "duration": 2000,
+      "proposal": "proposal_1",
+      "resID": 1
+    },
+    "2": {
+      "windows": {
+        "t1": [
+          {
+            "start": 0,
+            "end": 5000
+          }
+        ]
+      },
+      "duration": 2000,
+      "proposal": "proposal_1",
+      "resID": 2
+    },
+    "3": {
+      "windows": {
+        "t1": [
+          {
+            "start": 0,
+            "end": 5000
+          }
+        ]
+      },
+      "duration": 500,
+      "proposal": "proposal_1",
+      "resID": 3
+    },
+    "4": {
+      "windows": {
+        "t1": [
+          {
+            "start": 0,
+            "end": 5000
+          }
+        ]
+      },
+      "duration": 2000,
+      "proposal": "proposal_1",
+      "resID": 4
+    },
+    "5": {
+      "windows": {
+        "t1": [
+          {
+            "start": 0,
+            "end": 5000
+          }
+        ]
+      },
+      "duration": 1000,
+      "proposal": "proposal_1",
+      "resID": 5
+    },
+    "6": {
+      "windows": {
+        "t1": [
+          {
+            "start": 0,
+            "end": 5000
+          },
+          {
+            "start": 13000,
+            "end": 18000
+          }
+        ]
+      },
+      "duration": 2000,
+      "proposal": "proposal_1",
+      "resID": 6
+    }
+  }
+}

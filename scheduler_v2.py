@@ -28,18 +28,13 @@ class PossibleStart(object):
 
 
 class Scheduler(object):
-    def __init__(self):
-        pass
-
-    def load_input_params(self, input_params_dict):
-        self.start_time = input_params_dict["start_time"]
-        self.slice_size = input_params_dict["slice_size"]
-        self.horizon = input_params_dict["horizon"]
-        self.resources = input_params_dict["resources"]
-        self.proposals = input_params_dict["proposals"]
-
-
-    def load_requests(self, requests):
+    def __init__(self, now, horizon, slice_size, 
+                 resources, proposals, requests):
+        self.now = now
+        self.horizon = horizon          # Can we get rid of this?
+        self.slice_size = slice_size
+        self.resources = resources
+        self.proposals = proposals
         self.requests = requests
 
 
@@ -47,17 +42,12 @@ class Scheduler(object):
         for i, r in self.requests.items():
             fwd = {}
             for resource in r["windows"]:
-                fwd[resource] = overlap_time_segments(self.resources[resource],
-                                                      r["windows"][resource])
+                if resource in self.resources:
+                    fwd[resource] = overlap_time_segments(self.resources[resource],
+                                                          r["windows"][resource])
+                else:
+                    fwd[resource] = []
             r["free_windows_dict"] = fwd
-
-
-    def load_from_file(self, filename):
-        with open(filename, "r") as f:
-            data = json.load(f)
-        self.load_input_params(data["input_parameters"])
-        self.load_requests(data["requests"])
-        self.calculate_free_windows()
 
 
     def get_slices(self, intervals, resource, duration):
@@ -204,12 +194,11 @@ class Scheduler(object):
 
 
     def interpret_solution(self):
-        enum_aikt = list(enumerate(self.aikt))
         scheduled = []
 
         for i in range(len(self.solution)):
             if self.solution[i] == 1:
-                print(i, self.yik[i])
+                # print(i, self.yik[i])
                 scheduled.append(self.yik[i]) # ID, start_w_idx, priority, resource, isScheduled(dud), possible_start
 
         scheduled.sort(key=lambda x: x[5]) # Sort by Starting Window
@@ -227,11 +216,15 @@ class Scheduler(object):
             duration = r["duration"]
             end_time = start_time + duration
             print(f"Start Window ID = {r['possible_starts'][s[1]]}")
-            print(f"Start Window ID = {enum_aikt[s[1]-1]}")
             print(f"Start / End (Duration) = {start_time} / {end_time} ({duration})")
             print(f"Duration = {r['duration']}")
             print(f"Priority: {r['effective_priority']}")
             print()
+
+
+    def return_solution(self):
+        # Return solution in a hot-start-able format
+        pass
 
 
 def overlap_time_segments(seg1, seg2):

@@ -1,0 +1,79 @@
+{
+  "input_parameters": {
+    "start_time": 0,
+    "slice_size": 300,
+    "horizon": 28800,
+    "resources": ["t1", "t2", "t3"],
+    "proposals": {
+    	"proposal_1": {"tac_priority": 30},
+    	"proposal_2": {"tac_priority": 25}
+    }
+  },
+  "request_injections": [
+  	{
+  	 	"injection_time": 0,
+  	 	"requests": {
+		    "0": {
+		      "windows": {
+		        "t1": [
+		          {
+		            "start": 0,
+		            "end": 4500
+		          },
+		          {
+		            "start": 8100,
+		            "end": 12600
+		          }
+		        ]
+		      },
+		      "duration": 2000,
+		      "proposal": "proposal_1",
+		      "resID": 0
+		    },
+		    "1": {
+		    	"windows": {
+		    		"t1": [
+		    			{
+		    				"start": 0,
+		    			 	"end": 3000
+		    			 }
+		    		]
+		    	},
+		    	"duration": 1000,
+		    	"proposal": "proposal_1",
+		    	"resID": 1
+		    }
+  	 	}
+  	 },
+  	 {
+  	 	"injection_time": 3000,
+  	 	"requests": {
+  	 		"2": {
+  	 			"windows": {
+  	 				"t1": [
+  	 					{
+  	 						"start": 3200,
+  	 						"end": 6700
+  	 					},
+  	 					{
+  	 						"start": 12000,
+  	 						"end": 15000
+  	 					}
+  	 				]
+  	 			},
+  	 			"duration": 1000,
+  	 			"proposal": "proposal_1",
+  	 			"resID": 2
+  	 		}
+  	 	}
+  	 }
+  ],
+  "downtime_injections": [
+  	{
+  		"resource": "t1",
+  		"injection_time": 4000,
+  		"start_time": 4000,
+  		"end_time": 8000,
+  	}
+  ]
+}

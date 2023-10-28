@@ -1,0 +1,437 @@
+{
+    "input_parameters": {
+        "start_time": 0,
+        "slice_size": 300,
+        "horizon": 259200,
+        "resources": {
+            "t1": [
+                {
+                    "start": 0,
+                    "end": 259200
+                }
+            ]
+        },
+        "proposals": {
+            "proposal_0": {
+                "tac_priority": 39
+            },
+            "proposal_1": {
+                "tac_priority": 13
+            },
+            "proposal_2": {
+                "tac_priority": 28
+            },
+            "proposal_3": {
+                "tac_priority": 35
+            },
+            "proposal_4": {
+                "tac_priority": 9
+            }
+        }
+    },
+    "injections": [
+        {
+            "injection_time": 1000,
+            "injection_type": "request",
+            "injection_data": {
+                "0": {
+                    "windows": {
+                        "t1": [
+                            {
+                                "start": 220537,
+                                "end": 239241
+                            }
+                        ]
+                    },
+                    "duration": 7747,
+                    "proposal": "proposal_2",
+                    "resID": 0
+                },
+                "1": {
+                    "windows": {
+                        "t1": [
+                            {
+                                "start": 51264,
+                                "end": 105106
+                            },
+                            {
+                                "start": 124276,
+                                "end": 125873
+                            },
+                            {
+                                "start": 142813,
+                                "end": 145082
+                            },
+                            {
+                                "start": 188996,
+                                "end": 220273
+                            }
+                        ]
+                    },
+                    "duration": 10530,
+                    "proposal": "proposal_1",
+                    "resID": 1
+                },
+                "2": {
+                    "windows": {
+                        "t1": [
+                            {
+                                "start": 4970,
+                                "end": 40746
+                            },
+                            {
+                                "start": 103219,
+                                "end": 138148
+                            },
+                            {
+                                "start": 167424,
+                                "end": 195314
+                            },
+                            {
+                                "start": 228552,
+                                "end": 243702
+                            }
+                        ]
+                    },
+                    "duration": 1109,
+                    "proposal": "proposal_1",
+                    "resID": 2
+                },
+                "3": {
+                    "windows": {
+                        "t1": [
+                            {
+                                "start": 79975,
+                                "end": 205492
+                            }
+                        ]
+                    },
+                    "duration": 568,
+                    "proposal": "proposal_2",
+                    "resID": 3
+                },
+                "4": {
+                    "windows": {
+                        "t1": [
+                            {
+                                "start": 102609,
+                                "end": 104537
+                            },
+                            {
+                                "start": 112918,
+                                "end": 117554
+                            },
+                            {
+                                "start": 152233,
+                                "end": 156910
+                            },
+                            {
+                                "start": 188204,
+                                "end": 189435
+                            },
+                            {
+                                "start": 191873,
+                                "end": 207598
+                            },
+                            {
+                                "start": 210953,
+                                "end": 231375
+                            },
+                            {
+                                "start": 242213,
+                                "end": 242460
+                            },
+                            {
+                                "start": 246258,
+                                "end": 253731
+                            }
+                        ]
+                    },
+                    "duration": 2257,
+                    "proposal": "proposal_2",
+                    "resID": 4
+                }
+            }
+        },
+        {
+            "injection_time": 2000,
+            "injection_type": "request",
+            "injection_data": {
+                "5": {
+                    "windows": {
+                        "t1": [
+                            {
+                                "start": 11407,
+                                "end": 37643
+                            },
+                            {
+                                "start": 58881,
+                                "end": 131730
+                            }
+                        ]
+                    },
+                    "duration": 4286,
+                    "proposal": "proposal_3",
+                    "resID": 5
+                },
+                "6": {
+                    "windows": {
+                        "t1": [
+                            {
+                                "start": 93989,
+                                "end": 103152
+                            },
+                            {
+                                "start": 108843,
+                                "end": 112401
+                            },
+                            {
+                                "start": 134970,
+                                "end": 142011
+                            },
+                            {
+                                "start": 152476,
+                                "end": 155158
+                            },
+                            {
+                                "start": 155373,
+                                "end": 220491
+                            }
+                        ]
+                    },
+                    "duration": 3867,
+                    "proposal": "proposal_2",
+                    "resID": 6
+                },
+                "7": {
+                    "windows": {
+                        "t1": [
+                            {
+                                "start": 75317,
+                                "end": 226500
+                            }
+                        ]
+                    },
+                    "duration": 9985,
+                    "proposal": "proposal_1",
+                    "resID": 7
+                },
+                "8": {
+                    "windows": {
+                        "t1": [
+                            {
+                                "start": 29282,
+                                "end": 57345
+                            },
+                            {
+                                "start": 144020,
+                                "end": 151188
+                            },
+                            {
+                                "start": 151934,
+                                "end": 152348
+                            },
+                            {
+                                "start": 167930,
+                                "end": 173838
+                            },
+                            {
+                                "start": 189122,
+                                "end": 220001
+                            },
+                            {
+                                "start": 239160,
+                                "end": 254872
+                            }
+                        ]
+                    },
+                    "duration": 4435,
+                    "proposal": "proposal_2",
+                    "resID": 8
+                },
+                "9": {
+                    "windows": {
+                        "t1": [
+                            {
+                                "start": 18635,
+                                "end": 128353
+                            },
+                            {
+                                "start": 169446,
+                                "end": 225855
+                            }
+                        ]
+                    },
+                    "duration": 7981,
+                    "proposal": "proposal_0",
+                    "resID": 9
+                }
+            }
+        },
+        {
+            "injection_time": 3000,
+            "injection_type": "request",
+            "injection_data": {
+                "10": {
+                    "windows": {
+                        "t1": [
+                            {
+                                "start": 8275,
+                                "end": 20461
+                            },
+                            {
+                                "start": 34173,
+                                "end": 42522
+                            },
+                            {
+                                "start": 80041,
+                                "end": 110600
+                            },
+                            {
+                                "start": 111841,
+                                "end": 114972
+                            },
+                            {
+                                "start": 204534,
+                                "end": 212871
+                            },
+                            {
+                                "start": 231790,
+                                "end": 238168
+                            }
+                        ]
+                    },
+                    "duration": 784,
+                    "proposal": "proposal_4",
+                    "resID": 10
+                },
+                "11": {
+                    "windows": {
+                        "t1": [
+                            {
+                                "start": 102039,
+                                "end": 191334
+                            }
+                        ]
+                    },
+                    "duration": 9667,
+                    "proposal": "proposal_2",
+                    "resID": 11
+                },
+                "12": {
+                    "windows": {
+                        "t1": [
+                            {
+                                "start": 4896,
+                                "end": 11225
+                            },
+                            {
+                                "start": 12440,
+                                "end": 23177
+                            },
+                            {
+                                "start": 31342,
+                                "end": 64853
+                            },
+                            {
+                                "start": 84178,
+                                "end": 135492
+                            },
+                            {
+                                "start": 143398,
+                                "end": 160224
+                            }
+                        ]
+                    },
+                    "duration": 3293,
+                    "proposal": "proposal_3",
+                    "resID": 12
+                },
+                "13": {
+                    "windows": {
+                        "t1": [
+                            {
+                                "start": 14124,
+                                "end": 43946
+                            },
+                            {
+                                "start": 72041,
+                                "end": 85268
+                            },
+                            {
+                                "start": 92080,
+                                "end": 97423
+                            },
+                            {
+                                "start": 163030,
+                                "end": 183809
+                            },
+                            {
+                                "start": 230483,
+                                "end": 254306
+                            }
+                        ]
+                    },
+                    "duration": 2326,
+                    "proposal": "proposal_3",
+                    "resID": 13
+                },
+                "14": {
+                    "windows": {
+                        "t1": [
+                            {
+                                "start": 29888,
+                                "end": 104238
+                            },
+                            {
+                                "start": 123693,
+                                "end": 139334
+                            },
+                            {
+                                "start": 149606,
+                                "end": 159146
+                            },
+                            {
+                                "start": 165562,
+                                "end": 171791
+                            },
+                            {
+                                "start": 181512,
+                                "end": 215733
+                            },
+                            {
+                                "start": 230234,
+                                "end": 231036
+                            },
+                            {
+                                "start": 249578,
+                                "end": 258035
+                            }
+                        ]
+                    },
+                    "duration": 8367,
+                    "proposal": "proposal_2",
+                    "resID": 14
+                }
+            }
+        },
+        {
+            "injection_time": 1500,
+            "injection_type": "resource",
+            "injection_data": {
+                "start_time": 1500,
+                "end_time": 3500,
+                "resource": "t1"
+            }
+        },
+        {
+            "injection_time": 180000,
+            "injection_type": "resource",
+            "injection_data": {
+                "start_time": 180000,
+                "end_time": 220000,
+                "resource": "t1"
+            }
+        }
+    ]
+}

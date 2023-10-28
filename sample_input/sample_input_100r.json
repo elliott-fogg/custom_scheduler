@@ -1,0 +1,2846 @@
+{
+    "input_parameters": {
+        "start_time": 0,
+        "slice_size": 300,
+        "horizon": 86400,
+        "resources": {
+            "t1": [
+                {
+                    "start": 4659,
+                    "end": 17237
+                },
+                {
+                    "start": 32797,
+                    "end": 36955
+                },
+                {
+                    "start": 54178,
+                    "end": 54704
+                }
+            ]
+        },
+        "proposals": {
+            "proposal_0": {
+                "tac_priority": 10
+            },
+            "proposal_1": {
+                "tac_priority": 36
+            },
+            "proposal_2": {
+                "tac_priority": 19
+            },
+            "proposal_3": {
+                "tac_priority": 17
+            },
+            "proposal_4": {
+                "tac_priority": 10
+            }
+        }
+    },
+    "requests": {
+        "0": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 703,
+                        "end": 16202
+                    },
+                    {
+                        "start": 82721,
+                        "end": 82875
+                    }
+                ]
+            },
+            "duration": 688,
+            "proposal": "proposal_0",
+            "resID": 0
+        },
+        "1": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 6178,
+                        "end": 18902
+                    },
+                    {
+                        "start": 19645,
+                        "end": 22025
+                    },
+                    {
+                        "start": 22892,
+                        "end": 30925
+                    },
+                    {
+                        "start": 35077,
+                        "end": 35109
+                    },
+                    {
+                        "start": 37932,
+                        "end": 60524
+                    },
+                    {
+                        "start": 63287,
+                        "end": 63777
+                    },
+                    {
+                        "start": 71582,
+                        "end": 73340
+                    }
+                ]
+            },
+            "duration": 582,
+            "proposal": "proposal_3",
+            "resID": 1
+        },
+        "2": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 1117,
+                        "end": 6396
+                    },
+                    {
+                        "start": 7153,
+                        "end": 17138
+                    },
+                    {
+                        "start": 18640,
+                        "end": 19234
+                    },
+                    {
+                        "start": 23088,
+                        "end": 23631
+                    },
+                    {
+                        "start": 24851,
+                        "end": 40762
+                    },
+                    {
+                        "start": 51352,
+                        "end": 82130
+                    },
+                    {
+                        "start": 84794,
+                        "end": 85019
+                    }
+                ]
+            },
+            "duration": 936,
+            "proposal": "proposal_1",
+            "resID": 2
+        },
+        "3": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 3446,
+                        "end": 13694
+                    },
+                    {
+                        "start": 14032,
+                        "end": 23826
+                    },
+                    {
+                        "start": 36800,
+                        "end": 50120
+                    },
+                    {
+                        "start": 51100,
+                        "end": 56790
+                    }
+                ]
+            },
+            "duration": 534,
+            "proposal": "proposal_0",
+            "resID": 3
+        },
+        "4": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 10087,
+                        "end": 16633
+                    },
+                    {
+                        "start": 38670,
+                        "end": 46192
+                    },
+                    {
+                        "start": 50277,
+                        "end": 79124
+                    }
+                ]
+            },
+            "duration": 596,
+            "proposal": "proposal_0",
+            "resID": 4
+        },
+        "5": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 2797,
+                        "end": 8426
+                    },
+                    {
+                        "start": 13606,
+                        "end": 18678
+                    },
+                    {
+                        "start": 32236,
+                        "end": 41061
+                    },
+                    {
+                        "start": 45268,
+                        "end": 46448
+                    },
+                    {
+                        "start": 61960,
+                        "end": 62703
+                    },
+                    {
+                        "start": 63579,
+                        "end": 71570
+                    }
+                ]
+            },
+            "duration": 943,
+            "proposal": "proposal_3",
+            "resID": 5
+        },
+        "6": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 19544,
+                        "end": 23521
+                    },
+                    {
+                        "start": 26274,
+                        "end": 38742
+                    },
+                    {
+                        "start": 39418,
+                        "end": 40023
+                    },
+                    {
+                        "start": 50321,
+                        "end": 57971
+                    },
+                    {
+                        "start": 59801,
+                        "end": 60826
+                    },
+                    {
+                        "start": 70049,
+                        "end": 70513
+                    },
+                    {
+                        "start": 70533,
+                        "end": 77897
+                    }
+                ]
+            },
+            "duration": 571,
+            "proposal": "proposal_2",
+            "resID": 6
+        },
+        "7": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 6955,
+                        "end": 7463
+                    },
+                    {
+                        "start": 15016,
+                        "end": 17090
+                    },
+                    {
+                        "start": 23315,
+                        "end": 26523
+                    },
+                    {
+                        "start": 53646,
+                        "end": 75156
+                    },
+                    {
+                        "start": 79113,
+                        "end": 80531
+                    }
+                ]
+            },
+            "duration": 414,
+            "proposal": "proposal_1",
+            "resID": 7
+        },
+        "8": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 49047,
+                        "end": 52874
+                    },
+                    {
+                        "start": 68843,
+                        "end": 74571
+                    }
+                ]
+            },
+            "duration": 681,
+            "proposal": "proposal_0",
+            "resID": 8
+        },
+        "9": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 19180,
+                        "end": 28643
+                    },
+                    {
+                        "start": 41697,
+                        "end": 42357
+                    },
+                    {
+                        "start": 42710,
+                        "end": 48956
+                    },
+                    {
+                        "start": 57827,
+                        "end": 59799
+                    },
+                    {
+                        "start": 66373,
+                        "end": 70828
+                    },
+                    {
+                        "start": 73883,
+                        "end": 76138
+                    },
+                    {
+                        "start": 77393,
+                        "end": 77470
+                    },
+                    {
+                        "start": 78693,
+                        "end": 83456
+                    }
+                ]
+            },
+            "duration": 767,
+            "proposal": "proposal_4",
+            "resID": 9
+        },
+        "10": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 16145,
+                        "end": 23902
+                    },
+                    {
+                        "start": 29006,
+                        "end": 32587
+                    },
+                    {
+                        "start": 35357,
+                        "end": 37590
+                    },
+                    {
+                        "start": 39006,
+                        "end": 44697
+                    },
+                    {
+                        "start": 44741,
+                        "end": 65641
+                    },
+                    {
+                        "start": 78914,
+                        "end": 84577
+                    }
+                ]
+            },
+            "duration": 689,
+            "proposal": "proposal_3",
+            "resID": 10
+        },
+        "11": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 17022,
+                        "end": 23053
+                    },
+                    {
+                        "start": 43846,
+                        "end": 57875
+                    },
+                    {
+                        "start": 59362,
+                        "end": 62634
+                    },
+                    {
+                        "start": 68306,
+                        "end": 69268
+                    },
+                    {
+                        "start": 69655,
+                        "end": 81306
+                    }
+                ]
+            },
+            "duration": 452,
+            "proposal": "proposal_0",
+            "resID": 11
+        },
+        "12": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 7254,
+                        "end": 7779
+                    },
+                    {
+                        "start": 9806,
+                        "end": 27685
+                    },
+                    {
+                        "start": 28134,
+                        "end": 30982
+                    },
+                    {
+                        "start": 38169,
+                        "end": 48053
+                    },
+                    {
+                        "start": 50030,
+                        "end": 50334
+                    },
+                    {
+                        "start": 55768,
+                        "end": 67370
+                    },
+                    {
+                        "start": 72071,
+                        "end": 80025
+                    }
+                ]
+            },
+            "duration": 961,
+            "proposal": "proposal_3",
+            "resID": 12
+        },
+        "13": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 47385,
+                        "end": 51063
+                    },
+                    {
+                        "start": 56504,
+                        "end": 73452
+                    }
+                ]
+            },
+            "duration": 412,
+            "proposal": "proposal_2",
+            "resID": 13
+        },
+        "14": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 13660,
+                        "end": 19162
+                    },
+                    {
+                        "start": 28824,
+                        "end": 42384
+                    },
+                    {
+                        "start": 48636,
+                        "end": 48829
+                    },
+                    {
+                        "start": 52299,
+                        "end": 57573
+                    },
+                    {
+                        "start": 64894,
+                        "end": 66234
+                    },
+                    {
+                        "start": 76600,
+                        "end": 85422
+                    }
+                ]
+            },
+            "duration": 400,
+            "proposal": "proposal_2",
+            "resID": 14
+        },
+        "15": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 27,
+                        "end": 10688
+                    },
+                    {
+                        "start": 18286,
+                        "end": 80567
+                    }
+                ]
+            },
+            "duration": 614,
+            "proposal": "proposal_2",
+            "resID": 15
+        },
+        "16": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 3722,
+                        "end": 3865
+                    },
+                    {
+                        "start": 15824,
+                        "end": 25802
+                    },
+                    {
+                        "start": 27921,
+                        "end": 37090
+                    },
+                    {
+                        "start": 41133,
+                        "end": 44463
+                    },
+                    {
+                        "start": 47708,
+                        "end": 57854
+                    },
+                    {
+                        "start": 58254,
+                        "end": 70039
+                    },
+                    {
+                        "start": 70620,
+                        "end": 76574
+                    }
+                ]
+            },
+            "duration": 921,
+            "proposal": "proposal_3",
+            "resID": 16
+        },
+        "17": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 15378,
+                        "end": 18208
+                    },
+                    {
+                        "start": 22763,
+                        "end": 24892
+                    },
+                    {
+                        "start": 37585,
+                        "end": 40195
+                    },
+                    {
+                        "start": 62305,
+                        "end": 72447
+                    }
+                ]
+            },
+            "duration": 486,
+            "proposal": "proposal_3",
+            "resID": 17
+        },
+        "18": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 46041,
+                        "end": 50175
+                    }
+                ]
+            },
+            "duration": 407,
+            "proposal": "proposal_3",
+            "resID": 18
+        },
+        "19": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 18345,
+                        "end": 26692
+                    },
+                    {
+                        "start": 35936,
+                        "end": 50957
+                    },
+                    {
+                        "start": 61953,
+                        "end": 67071
+                    }
+                ]
+            },
+            "duration": 842,
+            "proposal": "proposal_4",
+            "resID": 19
+        },
+        "20": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 1244,
+                        "end": 8437
+                    },
+                    {
+                        "start": 8651,
+                        "end": 10950
+                    },
+                    {
+                        "start": 12719,
+                        "end": 37608
+                    },
+                    {
+                        "start": 42090,
+                        "end": 57174
+                    },
+                    {
+                        "start": 57892,
+                        "end": 83939
+                    }
+                ]
+            },
+            "duration": 732,
+            "proposal": "proposal_3",
+            "resID": 20
+        },
+        "21": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 6801,
+                        "end": 11594
+                    },
+                    {
+                        "start": 12343,
+                        "end": 26467
+                    },
+                    {
+                        "start": 29623,
+                        "end": 42296
+                    },
+                    {
+                        "start": 43460,
+                        "end": 51363
+                    },
+                    {
+                        "start": 54887,
+                        "end": 76396
+                    },
+                    {
+                        "start": 82753,
+                        "end": 84053
+                    },
+                    {
+                        "start": 84433,
+                        "end": 84990
+                    }
+                ]
+            },
+            "duration": 930,
+            "proposal": "proposal_0",
+            "resID": 21
+        },
+        "22": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 11178,
+                        "end": 23591
+                    },
+                    {
+                        "start": 30439,
+                        "end": 37305
+                    },
+                    {
+                        "start": 51908,
+                        "end": 61443
+                    },
+                    {
+                        "start": 70654,
+                        "end": 75222
+                    }
+                ]
+            },
+            "duration": 752,
+            "proposal": "proposal_3",
+            "resID": 22
+        },
+        "23": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 17418,
+                        "end": 26525
+                    },
+                    {
+                        "start": 39132,
+                        "end": 44922
+                    },
+                    {
+                        "start": 69675,
+                        "end": 75114
+                    },
+                    {
+                        "start": 76274,
+                        "end": 77073
+                    }
+                ]
+            },
+            "duration": 773,
+            "proposal": "proposal_4",
+            "resID": 23
+        },
+        "24": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 7848,
+                        "end": 25416
+                    },
+                    {
+                        "start": 26683,
+                        "end": 28320
+                    },
+                    {
+                        "start": 40906,
+                        "end": 41268
+                    },
+                    {
+                        "start": 56731,
+                        "end": 58597
+                    },
+                    {
+                        "start": 64687,
+                        "end": 68913
+                    },
+                    {
+                        "start": 76637,
+                        "end": 82527
+                    }
+                ]
+            },
+            "duration": 588,
+            "proposal": "proposal_0",
+            "resID": 24
+        },
+        "25": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 4943,
+                        "end": 7470
+                    },
+                    {
+                        "start": 15693,
+                        "end": 24440
+                    },
+                    {
+                        "start": 27780,
+                        "end": 31034
+                    },
+                    {
+                        "start": 32361,
+                        "end": 41341
+                    },
+                    {
+                        "start": 42857,
+                        "end": 48092
+                    },
+                    {
+                        "start": 50374,
+                        "end": 51012
+                    },
+                    {
+                        "start": 52054,
+                        "end": 52601
+                    },
+                    {
+                        "start": 65373,
+                        "end": 65699
+                    }
+                ]
+            },
+            "duration": 628,
+            "proposal": "proposal_1",
+            "resID": 25
+        },
+        "26": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 6927,
+                        "end": 14569
+                    },
+                    {
+                        "start": 27214,
+                        "end": 28890
+                    },
+                    {
+                        "start": 32860,
+                        "end": 34518
+                    },
+                    {
+                        "start": 39817,
+                        "end": 44591
+                    },
+                    {
+                        "start": 45302,
+                        "end": 57956
+                    }
+                ]
+            },
+            "duration": 577,
+            "proposal": "proposal_4",
+            "resID": 26
+        },
+        "27": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 27409,
+                        "end": 28235
+                    },
+                    {
+                        "start": 32177,
+                        "end": 47810
+                    },
+                    {
+                        "start": 63304,
+                        "end": 79869
+                    }
+                ]
+            },
+            "duration": 637,
+            "proposal": "proposal_1",
+            "resID": 27
+        },
+        "28": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 7338,
+                        "end": 10303
+                    },
+                    {
+                        "start": 23231,
+                        "end": 39559
+                    },
+                    {
+                        "start": 49074,
+                        "end": 55644
+                    },
+                    {
+                        "start": 57978,
+                        "end": 59916
+                    },
+                    {
+                        "start": 64246,
+                        "end": 70297
+                    },
+                    {
+                        "start": 70717,
+                        "end": 78351
+                    },
+                    {
+                        "start": 78439,
+                        "end": 82330
+                    }
+                ]
+            },
+            "duration": 418,
+            "proposal": "proposal_4",
+            "resID": 28
+        },
+        "29": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 29082,
+                        "end": 35189
+                    },
+                    {
+                        "start": 51007,
+                        "end": 54998
+                    },
+                    {
+                        "start": 64867,
+                        "end": 68120
+                    }
+                ]
+            },
+            "duration": 912,
+            "proposal": "proposal_3",
+            "resID": 29
+        },
+        "30": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 14110,
+                        "end": 15048
+                    },
+                    {
+                        "start": 18906,
+                        "end": 23425
+                    },
+                    {
+                        "start": 42118,
+                        "end": 44416
+                    },
+                    {
+                        "start": 45746,
+                        "end": 53235
+                    },
+                    {
+                        "start": 54942,
+                        "end": 63324
+                    },
+                    {
+                        "start": 76473,
+                        "end": 81145
+                    }
+                ]
+            },
+            "duration": 940,
+            "proposal": "proposal_1",
+            "resID": 30
+        },
+        "31": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 5486,
+                        "end": 19914
+                    },
+                    {
+                        "start": 45522,
+                        "end": 49128
+                    },
+                    {
+                        "start": 58543,
+                        "end": 62626
+                    },
+                    {
+                        "start": 64577,
+                        "end": 70689
+                    },
+                    {
+                        "start": 76390,
+                        "end": 82484
+                    }
+                ]
+            },
+            "duration": 607,
+            "proposal": "proposal_4",
+            "resID": 31
+        },
+        "32": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 39681,
+                        "end": 72428
+                    },
+                    {
+                        "start": 76564,
+                        "end": 77710
+                    }
+                ]
+            },
+            "duration": 695,
+            "proposal": "proposal_4",
+            "resID": 32
+        },
+        "33": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 1418,
+                        "end": 23787
+                    },
+                    {
+                        "start": 38178,
+                        "end": 45962
+                    },
+                    {
+                        "start": 48501,
+                        "end": 53760
+                    },
+                    {
+                        "start": 55412,
+                        "end": 55439
+                    },
+                    {
+                        "start": 62752,
+                        "end": 73224
+                    },
+                    {
+                        "start": 74340,
+                        "end": 85351
+                    }
+                ]
+            },
+            "duration": 655,
+            "proposal": "proposal_2",
+            "resID": 33
+        },
+        "34": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 14366,
+                        "end": 21244
+                    },
+                    {
+                        "start": 41900,
+                        "end": 42473
+                    },
+                    {
+                        "start": 50531,
+                        "end": 63692
+                    },
+                    {
+                        "start": 72606,
+                        "end": 73729
+                    }
+                ]
+            },
+            "duration": 576,
+            "proposal": "proposal_4",
+            "resID": 34
+        },
+        "35": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 7183,
+                        "end": 14012
+                    },
+                    {
+                        "start": 21733,
+                        "end": 21911
+                    },
+                    {
+                        "start": 25718,
+                        "end": 26416
+                    },
+                    {
+                        "start": 47935,
+                        "end": 53513
+                    },
+                    {
+                        "start": 60999,
+                        "end": 63211
+                    },
+                    {
+                        "start": 66204,
+                        "end": 72458
+                    },
+                    {
+                        "start": 75547,
+                        "end": 79496
+                    }
+                ]
+            },
+            "duration": 522,
+            "proposal": "proposal_0",
+            "resID": 35
+        },
+        "36": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 41361,
+                        "end": 50749
+                    },
+                    {
+                        "start": 67571,
+                        "end": 72988
+                    }
+                ]
+            },
+            "duration": 806,
+            "proposal": "proposal_2",
+            "resID": 36
+        },
+        "37": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 30205,
+                        "end": 36222
+                    },
+                    {
+                        "start": 41188,
+                        "end": 62848
+                    }
+                ]
+            },
+            "duration": 667,
+            "proposal": "proposal_0",
+            "resID": 37
+        },
+        "38": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 14427,
+                        "end": 19329
+                    },
+                    {
+                        "start": 24390,
+                        "end": 34376
+                    },
+                    {
+                        "start": 48407,
+                        "end": 48685
+                    },
+                    {
+                        "start": 56891,
+                        "end": 62486
+                    }
+                ]
+            },
+            "duration": 671,
+            "proposal": "proposal_4",
+            "resID": 38
+        },
+        "39": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 12917,
+                        "end": 14022
+                    },
+                    {
+                        "start": 17748,
+                        "end": 29223
+                    },
+                    {
+                        "start": 32369,
+                        "end": 33864
+                    },
+                    {
+                        "start": 44985,
+                        "end": 45565
+                    }
+                ]
+            },
+            "duration": 485,
+            "proposal": "proposal_1",
+            "resID": 39
+        },
+        "40": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 5587,
+                        "end": 15052
+                    },
+                    {
+                        "start": 17434,
+                        "end": 18599
+                    },
+                    {
+                        "start": 21663,
+                        "end": 35316
+                    },
+                    {
+                        "start": 42830,
+                        "end": 43775
+                    },
+                    {
+                        "start": 48808,
+                        "end": 56117
+                    },
+                    {
+                        "start": 57818,
+                        "end": 64341
+                    },
+                    {
+                        "start": 66080,
+                        "end": 66689
+                    },
+                    {
+                        "start": 74153,
+                        "end": 75261
+                    }
+                ]
+            },
+            "duration": 837,
+            "proposal": "proposal_3",
+            "resID": 40
+        },
+        "41": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 4125,
+                        "end": 6106
+                    },
+                    {
+                        "start": 20161,
+                        "end": 22276
+                    },
+                    {
+                        "start": 35692,
+                        "end": 38710
+                    },
+                    {
+                        "start": 50866,
+                        "end": 56543
+                    },
+                    {
+                        "start": 71322,
+                        "end": 76761
+                    }
+                ]
+            },
+            "duration": 401,
+            "proposal": "proposal_1",
+            "resID": 41
+        },
+        "42": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 5703,
+                        "end": 27189
+                    },
+                    {
+                        "start": 33691,
+                        "end": 48825
+                    },
+                    {
+                        "start": 66178,
+                        "end": 84442
+                    }
+                ]
+            },
+            "duration": 970,
+            "proposal": "proposal_4",
+            "resID": 42
+        },
+        "43": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 9672,
+                        "end": 15300
+                    },
+                    {
+                        "start": 15464,
+                        "end": 19586
+                    },
+                    {
+                        "start": 20768,
+                        "end": 26564
+                    },
+                    {
+                        "start": 28501,
+                        "end": 37839
+                    },
+                    {
+                        "start": 44145,
+                        "end": 56065
+                    },
+                    {
+                        "start": 63518,
+                        "end": 71309
+                    }
+                ]
+            },
+            "duration": 565,
+            "proposal": "proposal_2",
+            "resID": 43
+        },
+        "44": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 930,
+                        "end": 10474
+                    },
+                    {
+                        "start": 11374,
+                        "end": 12499
+                    },
+                    {
+                        "start": 18103,
+                        "end": 81897
+                    }
+                ]
+            },
+            "duration": 484,
+            "proposal": "proposal_4",
+            "resID": 44
+        },
+        "45": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 259,
+                        "end": 894
+                    },
+                    {
+                        "start": 4282,
+                        "end": 9170
+                    },
+                    {
+                        "start": 22391,
+                        "end": 23082
+                    },
+                    {
+                        "start": 34513,
+                        "end": 36901
+                    },
+                    {
+                        "start": 44116,
+                        "end": 54433
+                    },
+                    {
+                        "start": 58025,
+                        "end": 59740
+                    },
+                    {
+                        "start": 72467,
+                        "end": 80104
+                    }
+                ]
+            },
+            "duration": 930,
+            "proposal": "proposal_2",
+            "resID": 45
+        },
+        "46": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 1522,
+                        "end": 5802
+                    },
+                    {
+                        "start": 13318,
+                        "end": 27709
+                    },
+                    {
+                        "start": 29436,
+                        "end": 42810
+                    },
+                    {
+                        "start": 50918,
+                        "end": 57816
+                    },
+                    {
+                        "start": 58340,
+                        "end": 59300
+                    },
+                    {
+                        "start": 70203,
+                        "end": 82214
+                    }
+                ]
+            },
+            "duration": 642,
+            "proposal": "proposal_0",
+            "resID": 46
+        },
+        "47": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 12568,
+                        "end": 15029
+                    },
+                    {
+                        "start": 20672,
+                        "end": 28164
+                    },
+                    {
+                        "start": 30133,
+                        "end": 41383
+                    },
+                    {
+                        "start": 51414,
+                        "end": 51833
+                    },
+                    {
+                        "start": 54508,
+                        "end": 71502
+                    },
+                    {
+                        "start": 75083,
+                        "end": 78309
+                    }
+                ]
+            },
+            "duration": 649,
+            "proposal": "proposal_2",
+            "resID": 47
+        },
+        "48": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 3249,
+                        "end": 3472
+                    },
+                    {
+                        "start": 53224,
+                        "end": 77127
+                    }
+                ]
+            },
+            "duration": 747,
+            "proposal": "proposal_1",
+            "resID": 48
+        },
+        "49": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 27410,
+                        "end": 34781
+                    },
+                    {
+                        "start": 49977,
+                        "end": 59522
+                    },
+                    {
+                        "start": 66923,
+                        "end": 74576
+                    },
+                    {
+                        "start": 78823,
+                        "end": 83900
+                    }
+                ]
+            },
+            "duration": 934,
+            "proposal": "proposal_4",
+            "resID": 49
+        },
+        "50": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 8247,
+                        "end": 13071
+                    },
+                    {
+                        "start": 19399,
+                        "end": 23298
+                    },
+                    {
+                        "start": 37238,
+                        "end": 40425
+                    },
+                    {
+                        "start": 57494,
+                        "end": 59248
+                    },
+                    {
+                        "start": 65549,
+                        "end": 68084
+                    },
+                    {
+                        "start": 69529,
+                        "end": 76284
+                    },
+                    {
+                        "start": 81730,
+                        "end": 83468
+                    }
+                ]
+            },
+            "duration": 529,
+            "proposal": "proposal_2",
+            "resID": 50
+        },
+        "51": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 9584,
+                        "end": 16004
+                    },
+                    {
+                        "start": 29614,
+                        "end": 38699
+                    },
+                    {
+                        "start": 48004,
+                        "end": 68959
+                    }
+                ]
+            },
+            "duration": 911,
+            "proposal": "proposal_0",
+            "resID": 51
+        },
+        "52": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 617,
+                        "end": 1518
+                    },
+                    {
+                        "start": 1754,
+                        "end": 2666
+                    },
+                    {
+                        "start": 3017,
+                        "end": 6282
+                    },
+                    {
+                        "start": 7628,
+                        "end": 32458
+                    },
+                    {
+                        "start": 38841,
+                        "end": 39941
+                    },
+                    {
+                        "start": 45146,
+                        "end": 54288
+                    },
+                    {
+                        "start": 62069,
+                        "end": 62921
+                    },
+                    {
+                        "start": 66611,
+                        "end": 81460
+                    }
+                ]
+            },
+            "duration": 883,
+            "proposal": "proposal_3",
+            "resID": 52
+        },
+        "53": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 5744,
+                        "end": 11608
+                    },
+                    {
+                        "start": 14899,
+                        "end": 17398
+                    },
+                    {
+                        "start": 39978,
+                        "end": 40502
+                    },
+                    {
+                        "start": 53185,
+                        "end": 73820
+                    },
+                    {
+                        "start": 82015,
+                        "end": 85155
+                    }
+                ]
+            },
+            "duration": 596,
+            "proposal": "proposal_1",
+            "resID": 53
+        },
+        "54": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 20779,
+                        "end": 51312
+                    },
+                    {
+                        "start": 66644,
+                        "end": 69584
+                    }
+                ]
+            },
+            "duration": 542,
+            "proposal": "proposal_1",
+            "resID": 54
+        },
+        "55": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 811,
+                        "end": 39444
+                    },
+                    {
+                        "start": 66976,
+                        "end": 67167
+                    }
+                ]
+            },
+            "duration": 907,
+            "proposal": "proposal_0",
+            "resID": 55
+        },
+        "56": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 3785,
+                        "end": 11246
+                    },
+                    {
+                        "start": 42322,
+                        "end": 43615
+                    },
+                    {
+                        "start": 45006,
+                        "end": 51236
+                    },
+                    {
+                        "start": 55274,
+                        "end": 56878
+                    },
+                    {
+                        "start": 61003,
+                        "end": 65507
+                    },
+                    {
+                        "start": 73470,
+                        "end": 78857
+                    }
+                ]
+            },
+            "duration": 712,
+            "proposal": "proposal_3",
+            "resID": 56
+        },
+        "57": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 12771,
+                        "end": 26945
+                    },
+                    {
+                        "start": 33649,
+                        "end": 34307
+                    },
+                    {
+                        "start": 46872,
+                        "end": 55151
+                    },
+                    {
+                        "start": 62016,
+                        "end": 62496
+                    },
+                    {
+                        "start": 62769,
+                        "end": 85268
+                    }
+                ]
+            },
+            "duration": 607,
+            "proposal": "proposal_2",
+            "resID": 57
+        },
+        "58": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 31399,
+                        "end": 76617
+                    }
+                ]
+            },
+            "duration": 449,
+            "proposal": "proposal_4",
+            "resID": 58
+        },
+        "59": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 12852,
+                        "end": 23414
+                    },
+                    {
+                        "start": 23801,
+                        "end": 31651
+                    },
+                    {
+                        "start": 33446,
+                        "end": 41838
+                    },
+                    {
+                        "start": 50519,
+                        "end": 55237
+                    },
+                    {
+                        "start": 56539,
+                        "end": 59269
+                    },
+                    {
+                        "start": 65720,
+                        "end": 74035
+                    },
+                    {
+                        "start": 75622,
+                        "end": 85735
+                    }
+                ]
+            },
+            "duration": 748,
+            "proposal": "proposal_3",
+            "resID": 59
+        },
+        "60": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 4061,
+                        "end": 5242
+                    },
+                    {
+                        "start": 18095,
+                        "end": 25779
+                    },
+                    {
+                        "start": 28770,
+                        "end": 29915
+                    },
+                    {
+                        "start": 35714,
+                        "end": 47662
+                    },
+                    {
+                        "start": 47780,
+                        "end": 51304
+                    },
+                    {
+                        "start": 51681,
+                        "end": 68937
+                    },
+                    {
+                        "start": 79411,
+                        "end": 84162
+                    }
+                ]
+            },
+            "duration": 823,
+            "proposal": "proposal_0",
+            "resID": 60
+        },
+        "61": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 7639,
+                        "end": 26225
+                    },
+                    {
+                        "start": 49608,
+                        "end": 51775
+                    },
+                    {
+                        "start": 56723,
+                        "end": 62170
+                    },
+                    {
+                        "start": 62662,
+                        "end": 62688
+                    },
+                    {
+                        "start": 65909,
+                        "end": 65939
+                    },
+                    {
+                        "start": 73208,
+                        "end": 73380
+                    },
+                    {
+                        "start": 80318,
+                        "end": 84681
+                    }
+                ]
+            },
+            "duration": 565,
+            "proposal": "proposal_0",
+            "resID": 61
+        },
+        "62": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 12764,
+                        "end": 13656
+                    },
+                    {
+                        "start": 15189,
+                        "end": 15995
+                    },
+                    {
+                        "start": 18072,
+                        "end": 51920
+                    },
+                    {
+                        "start": 67205,
+                        "end": 74239
+                    }
+                ]
+            },
+            "duration": 619,
+            "proposal": "proposal_2",
+            "resID": 62
+        },
+        "63": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 19030,
+                        "end": 20663
+                    },
+                    {
+                        "start": 28252,
+                        "end": 55329
+                    },
+                    {
+                        "start": 57029,
+                        "end": 82137
+                    }
+                ]
+            },
+            "duration": 832,
+            "proposal": "proposal_3",
+            "resID": 63
+        },
+        "64": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 2397,
+                        "end": 3801
+                    },
+                    {
+                        "start": 33289,
+                        "end": 41538
+                    },
+                    {
+                        "start": 44956,
+                        "end": 50526
+                    },
+                    {
+                        "start": 58053,
+                        "end": 67365
+                    },
+                    {
+                        "start": 72073,
+                        "end": 72402
+                    },
+                    {
+                        "start": 77419,
+                        "end": 82075
+                    }
+                ]
+            },
+            "duration": 619,
+            "proposal": "proposal_0",
+            "resID": 64
+        },
+        "65": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 11238,
+                        "end": 12048
+                    },
+                    {
+                        "start": 26051,
+                        "end": 27103
+                    },
+                    {
+                        "start": 29043,
+                        "end": 30061
+                    },
+                    {
+                        "start": 31964,
+                        "end": 43661
+                    },
+                    {
+                        "start": 43765,
+                        "end": 51052
+                    }
+                ]
+            },
+            "duration": 971,
+            "proposal": "proposal_2",
+            "resID": 65
+        },
+        "66": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 217,
+                        "end": 27185
+                    },
+                    {
+                        "start": 39072,
+                        "end": 52211
+                    },
+                    {
+                        "start": 66509,
+                        "end": 71080
+                    },
+                    {
+                        "start": 73417,
+                        "end": 84473
+                    }
+                ]
+            },
+            "duration": 645,
+            "proposal": "proposal_1",
+            "resID": 66
+        },
+        "67": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 9271,
+                        "end": 20293
+                    },
+                    {
+                        "start": 26211,
+                        "end": 26699
+                    },
+                    {
+                        "start": 28345,
+                        "end": 32813
+                    },
+                    {
+                        "start": 38107,
+                        "end": 45076
+                    },
+                    {
+                        "start": 45156,
+                        "end": 76744
+                    }
+                ]
+            },
+            "duration": 971,
+            "proposal": "proposal_0",
+            "resID": 67
+        },
+        "68": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 7369,
+                        "end": 11619
+                    },
+                    {
+                        "start": 13985,
+                        "end": 26280
+                    },
+                    {
+                        "start": 26748,
+                        "end": 32909
+                    },
+                    {
+                        "start": 34800,
+                        "end": 37767
+                    },
+                    {
+                        "start": 40782,
+                        "end": 45790
+                    },
+                    {
+                        "start": 51786,
+                        "end": 55972
+                    },
+                    {
+                        "start": 59120,
+                        "end": 68934
+                    },
+                    {
+                        "start": 69901,
+                        "end": 75802
+                    }
+                ]
+            },
+            "duration": 831,
+            "proposal": "proposal_3",
+            "resID": 68
+        },
+        "69": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 3233,
+                        "end": 16019
+                    },
+                    {
+                        "start": 16276,
+                        "end": 22705
+                    },
+                    {
+                        "start": 31184,
+                        "end": 32895
+                    },
+                    {
+                        "start": 41962,
+                        "end": 45056
+                    },
+                    {
+                        "start": 75428,
+                        "end": 77777
+                    },
+                    {
+                        "start": 79677,
+                        "end": 85769
+                    }
+                ]
+            },
+            "duration": 573,
+            "proposal": "proposal_1",
+            "resID": 69
+        },
+        "70": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 2625,
+                        "end": 6230
+                    },
+                    {
+                        "start": 8926,
+                        "end": 14917
+                    },
+                    {
+                        "start": 38114,
+                        "end": 41503
+                    },
+                    {
+                        "start": 43806,
+                        "end": 53334
+                    },
+                    {
+                        "start": 63767,
+                        "end": 71200
+                    },
+                    {
+                        "start": 72877,
+                        "end": 79612
+                    }
+                ]
+            },
+            "duration": 852,
+            "proposal": "proposal_3",
+            "resID": 70
+        },
+        "71": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 109,
+                        "end": 15772
+                    },
+                    {
+                        "start": 22313,
+                        "end": 48422
+                    },
+                    {
+                        "start": 62821,
+                        "end": 63264
+                    }
+                ]
+            },
+            "duration": 684,
+            "proposal": "proposal_3",
+            "resID": 71
+        },
+        "72": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 1416,
+                        "end": 43244
+                    },
+                    {
+                        "start": 47394,
+                        "end": 47968
+                    },
+                    {
+                        "start": 49195,
+                        "end": 60398
+                    },
+                    {
+                        "start": 62022,
+                        "end": 71412
+                    }
+                ]
+            },
+            "duration": 890,
+            "proposal": "proposal_4",
+            "resID": 72
+        },
+        "73": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 1351,
+                        "end": 9714
+                    },
+                    {
+                        "start": 10254,
+                        "end": 15029
+                    },
+                    {
+                        "start": 22730,
+                        "end": 22945
+                    },
+                    {
+                        "start": 24397,
+                        "end": 30630
+                    },
+                    {
+                        "start": 34146,
+                        "end": 39966
+                    },
+                    {
+                        "start": 41141,
+                        "end": 47541
+                    },
+                    {
+                        "start": 59191,
+                        "end": 61927
+                    },
+                    {
+                        "start": 69665,
+                        "end": 70181
+                    }
+                ]
+            },
+            "duration": 953,
+            "proposal": "proposal_0",
+            "resID": 73
+        },
+        "74": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 1929,
+                        "end": 6967
+                    },
+                    {
+                        "start": 14013,
+                        "end": 21636
+                    },
+                    {
+                        "start": 43671,
+                        "end": 49681
+                    },
+                    {
+                        "start": 80056,
+                        "end": 83990
+                    }
+                ]
+            },
+            "duration": 914,
+            "proposal": "proposal_3",
+            "resID": 74
+        },
+        "75": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 1123,
+                        "end": 10574
+                    },
+                    {
+                        "start": 11241,
+                        "end": 11935
+                    },
+                    {
+                        "start": 13671,
+                        "end": 14284
+                    },
+                    {
+                        "start": 26419,
+                        "end": 56911
+                    },
+                    {
+                        "start": 60312,
+                        "end": 63535
+                    },
+                    {
+                        "start": 71891,
+                        "end": 85452
+                    }
+                ]
+            },
+            "duration": 687,
+            "proposal": "proposal_0",
+            "resID": 75
+        },
+        "76": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 3751,
+                        "end": 4935
+                    },
+                    {
+                        "start": 6475,
+                        "end": 16157
+                    },
+                    {
+                        "start": 27629,
+                        "end": 28091
+                    },
+                    {
+                        "start": 39812,
+                        "end": 42763
+                    },
+                    {
+                        "start": 57706,
+                        "end": 58336
+                    },
+                    {
+                        "start": 66927,
+                        "end": 81261
+                    }
+                ]
+            },
+            "duration": 729,
+            "proposal": "proposal_0",
+            "resID": 76
+        },
+        "77": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 1991,
+                        "end": 16820
+                    },
+                    {
+                        "start": 28437,
+                        "end": 45696
+                    },
+                    {
+                        "start": 57020,
+                        "end": 70308
+                    },
+                    {
+                        "start": 76920,
+                        "end": 84656
+                    }
+                ]
+            },
+            "duration": 855,
+            "proposal": "proposal_4",
+            "resID": 77
+        },
+        "78": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 10226,
+                        "end": 17894
+                    },
+                    {
+                        "start": 21621,
+                        "end": 30712
+                    },
+                    {
+                        "start": 31642,
+                        "end": 36886
+                    },
+                    {
+                        "start": 39712,
+                        "end": 43742
+                    },
+                    {
+                        "start": 51095,
+                        "end": 57413
+                    },
+                    {
+                        "start": 61826,
+                        "end": 71408
+                    },
+                    {
+                        "start": 81237,
+                        "end": 82486
+                    }
+                ]
+            },
+            "duration": 932,
+            "proposal": "proposal_4",
+            "resID": 78
+        },
+        "79": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 9654,
+                        "end": 22506
+                    },
+                    {
+                        "start": 24144,
+                        "end": 38244
+                    },
+                    {
+                        "start": 38791,
+                        "end": 39747
+                    },
+                    {
+                        "start": 44080,
+                        "end": 45194
+                    },
+                    {
+                        "start": 48860,
+                        "end": 50670
+                    },
+                    {
+                        "start": 59712,
+                        "end": 77885
+                    }
+                ]
+            },
+            "duration": 814,
+            "proposal": "proposal_4",
+            "resID": 79
+        },
+        "80": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 991,
+                        "end": 7170
+                    },
+                    {
+                        "start": 13152,
+                        "end": 28382
+                    },
+                    {
+                        "start": 46012,
+                        "end": 47780
+                    },
+                    {
+                        "start": 57761,
+                        "end": 60055
+                    },
+                    {
+                        "start": 69437,
+                        "end": 78743
+                    },
+                    {
+                        "start": 78872,
+                        "end": 82035
+                    },
+                    {
+                        "start": 83974,
+                        "end": 85172
+                    }
+                ]
+            },
+            "duration": 657,
+            "proposal": "proposal_4",
+            "resID": 80
+        },
+        "81": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 9541,
+                        "end": 11436
+                    },
+                    {
+                        "start": 17426,
+                        "end": 21547
+                    },
+                    {
+                        "start": 25149,
+                        "end": 26529
+                    },
+                    {
+                        "start": 34399,
+                        "end": 39100
+                    },
+                    {
+                        "start": 51871,
+                        "end": 58055
+                    },
+                    {
+                        "start": 63569,
+                        "end": 64388
+                    },
+                    {
+                        "start": 68554,
+                        "end": 70116
+                    },
+                    {
+                        "start": 73590,
+                        "end": 75569
+                    }
+                ]
+            },
+            "duration": 668,
+            "proposal": "proposal_0",
+            "resID": 81
+        },
+        "82": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 15556,
+                        "end": 26166
+                    },
+                    {
+                        "start": 31168,
+                        "end": 59639
+                    },
+                    {
+                        "start": 74126,
+                        "end": 81933
+                    }
+                ]
+            },
+            "duration": 696,
+            "proposal": "proposal_2",
+            "resID": 82
+        },
+        "83": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 190,
+                        "end": 13249
+                    },
+                    {
+                        "start": 39535,
+                        "end": 42622
+                    },
+                    {
+                        "start": 57606,
+                        "end": 64071
+                    },
+                    {
+                        "start": 67748,
+                        "end": 78515
+                    }
+                ]
+            },
+            "duration": 445,
+            "proposal": "proposal_2",
+            "resID": 83
+        },
+        "84": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 23407,
+                        "end": 40725
+                    },
+                    {
+                        "start": 44980,
+                        "end": 60257
+                    },
+                    {
+                        "start": 62400,
+                        "end": 65068
+                    },
+                    {
+                        "start": 68008,
+                        "end": 74008
+                    },
+                    {
+                        "start": 76650,
+                        "end": 81952
+                    }
+                ]
+            },
+            "duration": 646,
+            "proposal": "proposal_0",
+            "resID": 84
+        },
+        "85": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 902,
+                        "end": 4619
+                    },
+                    {
+                        "start": 9717,
+                        "end": 23474
+                    },
+                    {
+                        "start": 45537,
+                        "end": 47642
+                    },
+                    {
+                        "start": 70332,
+                        "end": 72467
+                    }
+                ]
+            },
+            "duration": 438,
+            "proposal": "proposal_3",
+            "resID": 85
+        },
+        "86": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 12313,
+                        "end": 22387
+                    },
+                    {
+                        "start": 31262,
+                        "end": 42817
+                    },
+                    {
+                        "start": 47787,
+                        "end": 76119
+                    }
+                ]
+            },
+            "duration": 887,
+            "proposal": "proposal_4",
+            "resID": 86
+        },
+        "87": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 1489,
+                        "end": 71480
+                    }
+                ]
+            },
+            "duration": 634,
+            "proposal": "proposal_2",
+            "resID": 87
+        },
+        "88": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 32653,
+                        "end": 37465
+                    },
+                    {
+                        "start": 45753,
+                        "end": 45813
+                    },
+                    {
+                        "start": 73353,
+                        "end": 74812
+                    }
+                ]
+            },
+            "duration": 993,
+            "proposal": "proposal_3",
+            "resID": 88
+        },
+        "89": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 7590,
+                        "end": 52819
+                    },
+                    {
+                        "start": 53086,
+                        "end": 56185
+                    },
+                    {
+                        "start": 59543,
+                        "end": 60753
+                    }
+                ]
+            },
+            "duration": 422,
+            "proposal": "proposal_4",
+            "resID": 89
+        },
+        "90": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 34984,
+                        "end": 40049
+                    },
+                    {
+                        "start": 47840,
+                        "end": 54932
+                    }
+                ]
+            },
+            "duration": 526,
+            "proposal": "proposal_0",
+            "resID": 90
+        },
+        "91": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 5764,
+                        "end": 12482
+                    },
+                    {
+                        "start": 32763,
+                        "end": 51939
+                    },
+                    {
+                        "start": 53377,
+                        "end": 55480
+                    }
+                ]
+            },
+            "duration": 479,
+            "proposal": "proposal_3",
+            "resID": 91
+        },
+        "92": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 34790,
+                        "end": 48312
+                    }
+                ]
+            },
+            "duration": 588,
+            "proposal": "proposal_3",
+            "resID": 92
+        },
+        "93": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 2683,
+                        "end": 30500
+                    },
+                    {
+                        "start": 30674,
+                        "end": 37730
+                    },
+                    {
+                        "start": 46577,
+                        "end": 46724
+                    },
+                    {
+                        "start": 48483,
+                        "end": 50230
+                    },
+                    {
+                        "start": 54159,
+                        "end": 66562
+                    },
+                    {
+                        "start": 78424,
+                        "end": 80544
+                    }
+                ]
+            },
+            "duration": 562,
+            "proposal": "proposal_1",
+            "resID": 93
+        },
+        "94": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 9,
+                        "end": 18013
+                    },
+                    {
+                        "start": 20594,
+                        "end": 25559
+                    },
+                    {
+                        "start": 32088,
+                        "end": 34481
+                    },
+                    {
+                        "start": 62148,
+                        "end": 63652
+                    },
+                    {
+                        "start": 69349,
+                        "end": 74735
+                    },
+                    {
+                        "start": 76883,
+                        "end": 85026
+                    }
+                ]
+            },
+            "duration": 853,
+            "proposal": "proposal_1",
+            "resID": 94
+        },
+        "95": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 12091,
+                        "end": 13889
+                    },
+                    {
+                        "start": 27051,
+                        "end": 27618
+                    },
+                    {
+                        "start": 33531,
+                        "end": 33988
+                    },
+                    {
+                        "start": 46726,
+                        "end": 47456
+                    },
+                    {
+                        "start": 49495,
+                        "end": 50012
+                    },
+                    {
+                        "start": 51386,
+                        "end": 75094
+                    },
+                    {
+                        "start": 75280,
+                        "end": 85569
+                    }
+                ]
+            },
+            "duration": 710,
+            "proposal": "proposal_3",
+            "resID": 95
+        },
+        "96": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 9888,
+                        "end": 20168
+                    },
+                    {
+                        "start": 25326,
+                        "end": 25459
+                    },
+                    {
+                        "start": 27983,
+                        "end": 36466
+                    },
+                    {
+                        "start": 37430,
+                        "end": 42229
+                    },
+                    {
+                        "start": 45095,
+                        "end": 52202
+                    },
+                    {
+                        "start": 67735,
+                        "end": 78882
+                    },
+                    {
+                        "start": 84272,
+                        "end": 85554
+                    }
+                ]
+            },
+            "duration": 621,
+            "proposal": "proposal_4",
+            "resID": 96
+        },
+        "97": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 14569,
+                        "end": 15497
+                    },
+                    {
+                        "start": 32317,
+                        "end": 34536
+                    },
+                    {
+                        "start": 48935,
+                        "end": 58821
+                    },
+                    {
+                        "start": 77195,
+                        "end": 85037
+                    }
+                ]
+            },
+            "duration": 925,
+            "proposal": "proposal_4",
+            "resID": 97
+        },
+        "98": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 75976,
+                        "end": 86115
+                    }
+                ]
+            },
+            "duration": 822,
+            "proposal": "proposal_0",
+            "resID": 98
+        },
+        "99": {
+            "windows": {
+                "t1": [
+                    {
+                        "start": 16432,
+                        "end": 17301
+                    },
+                    {
+                        "start": 22647,
+                        "end": 33785
+                    },
+                    {
+                        "start": 40873,
+                        "end": 46758
+                    },
+                    {
+                        "start": 50436,
+                        "end": 61976
+                    },
+                    {
+                        "start": 68877,
+                        "end": 81163
+                    }
+                ]
+            },
+            "duration": 667,
+            "proposal": "proposal_4",
+            "resID": 99
+        }
+    }
+}
