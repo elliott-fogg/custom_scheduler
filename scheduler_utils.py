@@ -21,6 +21,31 @@ class PossibleStart(object):
                                                        self.slice_size)
 
 
+class TimeSegment(object):
+    def __init__(self, start, end):
+        if start < end:
+            self.start = start
+            self.end = end
+        else:
+            raise Exception()
+
+    def __gt__(self, other):
+        if self.start == other.start:
+            return self.end > other.end
+        else:
+            return self.start > other.start
+
+    def __lt__(self, other):
+        if self.start == other.start:
+            return self.end < other.end
+        else:
+            return self.start < other.start
+
+    def __eq__(self, other):
+        return (self.start == other.start) and (self.end == other.end)
+
+
+
 def overlap_time_segments(seg1, seg2, now):
     overlap_segments = []
     i = 0

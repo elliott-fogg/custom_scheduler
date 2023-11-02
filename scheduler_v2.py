@@ -4,6 +4,8 @@ import json
 import random
 import math
 
+from scheduler_utils import PossibleStart, TimeSegment, overlap_time_segments
+
 
 class Scheduler(object):
     def __init__(self, now, horizon, slice_size, 

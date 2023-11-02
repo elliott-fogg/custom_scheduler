@@ -5,7 +5,7 @@ import json
 import random
 import math
 import os
-
+from scheduler_utils import TimeSegment, Injection, TelescopeEvent, RequestEvent, injection_from_json
 
 class MultiRunScheduler(object):
     def __init__(self, input_filepath):
