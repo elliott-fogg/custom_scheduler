@@ -135,11 +135,11 @@ class MultiRunScheduler(object):
 
                 self.events.append(TelescopeEvent(data["start_time"],
                                              data["resource"],
-                                             False)
+                                             True)
                              )
                 self.events.append(TelescopeEvent(data["end_time"],
                                              data["resource"],
-                                             True)
+                                             False)
                              )
         self.events.sort()
 
@@ -189,6 +189,13 @@ class MultiRunScheduler(object):
             self.process_resource_event(current_event)
 
         self.now = current_event.injection_time
+
+        print("Current event number: {}/{}".format(self.next_event, len(self.events)))
+        print(current_event)
+        print(current_event.data)
+        print("Running again. Now = {}".format(self.now))
+        print("Current requests: {}".format(self.current_requests))
+        print("Current resources: {}".format(self.current_resources))
         
         self.run_scheduler()
         
