@@ -185,6 +185,7 @@ class Scheduler(object):
 
 
     def solve_model(self):
+        self.model.setParam("OutputFlag", False) # Disable output from model?
         self.model.optimize()
         if self.model.Status != GRB.OPTIMAL:
             print(f"Model Status not optimal: {self.model.Status}")
@@ -203,23 +204,24 @@ class Scheduler(object):
 
         scheduled.sort(key=lambda x: x[5]) # Sort by Starting Window
         scheduled.sort(key=lambda x: x[3]) # Sort by Resource
+
+        print("\nTotal Priority: {}\nScheduled Observations: {}\n---".format(self.model.ObjVal, len(scheduled)))
+
         for i in range(len(scheduled)):
             s = scheduled[i]
-            rid = s[0]
 
-            print(s)
+            rid = s[0]
+            resource = s[3]
 
             r = self.requests[str(rid)]
-            print(f"Request {rid}:")
-            print(f"Resource = {s[3]}")
             start_time = s[5].internal_start
             duration = r["duration"]
             end_time = start_time + duration
-            print(f"Start Window ID = {r['possible_starts'][s[1]]}")
-            print(f"Start / End (Duration) = {start_time} / {end_time} ({duration})")
-            print(f"Duration = {r['duration']}")
-            print(f"Priority: {r['effective_priority']}")
-            print()
+
+            print("Request {}: Resource={}, S/E(D)={}/{}({}), Priority = {}".format(
+                    rid, resource, start_time, end_time, duration, r["effective_priority"]))
+
+        print("---\n")
 
 
     def return_solution(self):
