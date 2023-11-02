@@ -44,7 +44,8 @@ class Scheduler(object):
             for resource in r["windows"]:
                 if resource in self.resources:
                     fwd[resource] = overlap_time_segments(self.resources[resource],
-                                                          r["windows"][resource])
+                                                          r["windows"][resource],
+                                                          self.now)
                 else:
                     fwd[resource] = []
             r["free_windows_dict"] = fwd
@@ -229,10 +230,13 @@ class Scheduler(object):
         pass
 
 
-def overlap_time_segments(seg1, seg2):
+def overlap_time_segments(seg1, seg2, now):
     overlap_segments = []
     i = 0
     j = 0
+
+    seg1.sort(key=lambda x: x["start"])
+    seg2.sort(key=lambda x: x["start"])
 
     while ((i < len(seg1)) and (j < len(seg2))):
         s1 = seg1[i]
@@ -246,18 +250,18 @@ def overlap_time_segments(seg1, seg2):
             j += 1
             continue
 
-        window_start = max([s1["start"], s2["start"]])
+        window_start = max([s1["start"], s2["start"], now])
         
         if s1["end"] < s2["end"]: # s1 ends first, move to next s1
             window_end = s1["end"]
             i += 1
             
         elif s1["end"] > s2["end"]: # s2 ends first, move to next s2
-            window_end= s2["end"]
+            window_end= max([s2["end"], now])
             j += 1
 
         else: # Both segments end at the same time, move to next of both
-            window_end = s1["end"]
+            window_end = max([s1["end"], now])
             i += 1
             j+= 1
 
