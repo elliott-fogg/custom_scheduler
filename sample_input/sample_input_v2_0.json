@@ -429,7 +429,7 @@
             "injection_type": "resource",
             "injection_data": {
                 "start_time": 180000,
-                "end_time": 220000,
+                "end_time": 240000,
                 "resource": "t1"
             }
         }
