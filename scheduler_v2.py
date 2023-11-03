@@ -11,7 +11,7 @@ class Scheduler(object):
     def __init__(self, now, horizon, slice_size, 
                  resources, proposals, requests, verbose=1):
         self.now = now
-        self.horizon = horizon          # Can we get rid of this?
+        self.horizon = horizon
         self.slice_size = slice_size
         self.resources = resources
         self.proposals = proposals
@@ -31,7 +31,8 @@ class Scheduler(object):
                 if resource in self.resources:
                     fwd[resource] = overlap_time_segments(self.resources[resource],
                                                           r["windows"][resource],
-                                                          self.now)
+                                                          self.now,
+                                                          self.horizon)
                 else:
                     fwd[resource] = []
             r["free_windows_dict"] = fwd

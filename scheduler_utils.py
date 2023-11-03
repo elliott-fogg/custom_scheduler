@@ -46,7 +46,7 @@ class TimeSegment(object):
 
 
 
-def overlap_time_segments(seg1, seg2, now):
+def overlap_time_segments(seg1, seg2, now, horizon):
     overlap_segments = []
     i = 0
     j = 0
@@ -73,11 +73,11 @@ def overlap_time_segments(seg1, seg2, now):
             i += 1
             
         elif s1["end"] > s2["end"]: # s2 ends first, move to next s2
-            window_end= max([s2["end"], now])
+            window_end= min(max([s2["end"], now]), horizon)
             j += 1
 
         else: # Both segments end at the same time, move to next of both
-            window_end = max([s1["end"], now])
+            window_end = min(max([s1["end"], now]), horizon)
             i += 1
             j+= 1
 
