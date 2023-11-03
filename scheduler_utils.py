@@ -87,6 +87,45 @@ def overlap_time_segments(seg1, seg2, now, horizon):
     return overlap_segments
 
 
+def cut_time_segments(seg1, cut_start, cut_end):
+    output_segments = []
+    for seg in seg1:
+        if seg["start"] < cut_start:
+            # Segment starts before the cut
+            if seg["end"] < cut_start:
+                # Segment also ends before the cut, so it's unaffected
+                output_segments.append(seg)
+
+            else:
+                # There is a new segment before the cut
+                output_segments.append({"start": seg["start"],
+                                             "end": cut_start})
+
+                if seg["end"] > cut_end:
+                    # Segment extends past both ends of the cut, have to split
+                    # into two separate segments.
+                    output_segments.append({"start": cut_end,
+                                                 "end": seg["end"]})
+
+        else:
+            # Segment starts after the cut starts
+            if seg["start"] > cut_end:
+                # Segment starts after the cut ends, so it's unaffected
+                output_segments.append(seg)
+
+            else:
+                if seg["end"] < cut_end:
+                    # Segment occurs entirely within the cut, so it is removed
+                    continue
+
+                else:
+                    # Cut only affects the first part of the segment
+                    output_segments.append({"start": cut_end,
+                                                 "end": seg["end"]})
+
+    return output_segments
+
+
 class Injection(object):
     def __init__(self, injection_time, injection_type, data=None):
         self.time = injection_time

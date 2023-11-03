@@ -31,7 +31,7 @@
     },
     "injections": [
         {
-            "injection_time": 1000,
+            "injection_time": 0,
             "injection_type": "request",
             "injection_data": {
                 "0": {
@@ -425,11 +425,11 @@
             }
         },
         {
-            "injection_time": 180000,
+            "injection_time": 85000,
             "injection_type": "resource",
             "injection_data": {
-                "start_time": 180000,
-                "end_time": 240000,
+                "start_time": 85000,
+                "end_time": 100000,
                 "resource": "t1"
             }
         }

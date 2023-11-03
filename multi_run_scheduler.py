@@ -1,11 +1,11 @@
 from gurobipy import Model, GRB, tuplelist, quicksum
 from gurobipy import read as gurobi_read_model
-from scheduler_v2 import *
+from scheduler_v2 import Scheduler
 import json
 import random
 import math
 import os
-from scheduler_utils import TimeSegment, Injection, TelescopeEvent, RequestEvent#, injection_from_json
+from scheduler_utils import TimeSegment, Injection, TelescopeEvent, RequestEvent, cut_time_segments
 
 class SchedulerSimulation(object):
     def __init__(self, input_filepath):
@@ -39,7 +39,7 @@ class SchedulerSimulation(object):
         # A list of the request IDs that have been created at 'self.now'
         self.current_requests = []
         # A dict of the requests that have been completed in previous schedules
-        self.completed_requests = set() # UNSURE if this should be set or dict
+        self.completed_requests = {}
 
         # EVENTS - changes to requests or resources that trigger another scheduler run
         self.events = []
@@ -100,57 +100,139 @@ class SchedulerSimulation(object):
             # print(f"Resource Event ({event.time}): {resource} {'closed' if (event.data['closed']) else 'opened'}")
 
 
-    def run_scheduler(self):
+    def prepare_scheduler(self, final=False):
+        # Check if any requests have been successful
+        # Check if any requests are in the middle of being completed
+            # Check if those requests have been cancelled
+            # Check if they impact available resource time
+
+        if final:
+            self.now = self.horizon
+
+        occupied_requests = []
+        occupied_resources = {}
+
         if len(self.scheduler_results) == 0:
             # We're in the first run, don't need to account for past requests
             pass
+
         else:
             for rid, r in self.scheduler_results[-1]["scheduled"].items():
                 if r["start"] > self.now:
+                    # Request hasn't been executed yet, still changeable
                     continue
 
                 elif r["end"] <= self.now:
-                    self.completed_requests.add(rid)
+                    # Request has been executed. Save the information.
+                    self.completed_requests[rid] = r
 
                 else:
-                    # These observations are only partway completed.
-                    # Assume they are locked into the schedule, and incorporate
-                    # them into the blocked off time of the resources.
-                    # TODO
-                    self.completed_requests.add(rid) # THIS NEEDS TO BE EXTENDED UPON
+                    # Request is currently being executed. Check if it has been 
+                    # interrupted.
+                    if r["resource"] in self.current_resources:
+                        # Request is currently being executed. Remove from 
+                        # schedulable requests (assume it is fixed), and remove
+                        # the required time from the relevant resource.
+                        occupied_requests.append(rid)
+                        occupied_resources[r["resource"]] = r["end"]
+                        print(f"Occupied Request: {rid}")
 
-        # Determine requests
+                    else:
+                        # Request has been interrupted. Reissue it as if it was
+                        # never scheduled.
+                        print(f"Interrupted Request: {rid}")
+                        pass
+
+        # Filter requests
         requests = {}
         for reqID in self.current_requests:
             if reqID not in self.completed_requests:
-                requests[reqID] = self.all_requests[reqID]
+                if reqID not in occupied_requests:
+                    requests[reqID] = self.all_requests[reqID]
+
+        # Filter resources
+        resources = {}
+        for res in self.current_resources:
+            resource_times = self.base_resources[res]
+            if res in occupied_resources:
+                resource_times = cut_time_segments(resource_times, 
+                                                   self.now, 
+                                                   occupied_resources[res])
+            resources[res] = resource_times
 
         print("Scheduling Run Information:")
         print(f"Now: {self.now}")
         print(f"Current Requests: {self.current_requests}")
-        print(f"Completed Requests: {self.completed_requests}")
-        print(f"Schedulable Requests: {requests.keys()}")
-        print(f"Current Resources: {self.current_resources}")
+        print(f"Completed Requests: {list(self.completed_requests.keys())}")
+        print(f"Schedulable Requests: {list(requests.keys())}")
+        print(f"Current Resources: {list(self.current_resources)}")
+
+        return requests, resources
 
 
-        # Determine resources
-        resources = {}
-        for res in self.current_resources:
-            resources[res] = self.base_resources[res]
-
-        # TODO: Remove windows for resources that have observations currently running
-        #
-        # Do this here.
-        #
-
+    def run_scheduler(self, requests, resources):
         sched = Scheduler(self.now, self.horizon, self.slice_size, resources, self.proposals, requests)
         sched.calculate_free_windows()
         sched.build_data_structures()
         sched.build_model()
         sched.solve_model()
-
         scheduled = sched.return_solution(False)
-        self.save_solution(scheduled)
+        self.scheduler_results.append(scheduled)
+
+
+    # def run_scheduler(self):
+    #     if len(self.scheduler_results) == 0:
+    #         # We're in the first run, don't need to account for past requests
+    #         pass
+    #     else:
+    #         for rid, r in self.scheduler_results[-1]["scheduled"].items():
+    #             if r["start"] > self.now:
+    #                 continue
+
+    #             elif r["end"] <= self.now:
+    #                 self.completed_requests.add(rid)
+
+    #             else:
+    #                 print(rid)
+    #                 print(r)
+    #                 # These observations are only partway completed.
+    #                 # Assume they are locked into the schedule, and incorporate
+    #                 # them into the blocked off time of the resources.
+    #                 # TODO
+    #                 self.completed_requests.add(rid) # THIS NEEDS TO BE EXTENDED UPON
+
+    #     # Determine requests
+    #     requests = {}
+    #     for reqID in self.current_requests:
+    #         if reqID not in self.completed_requests:
+    #             requests[reqID] = self.all_requests[reqID]
+
+    #     print("Scheduling Run Information:")
+    #     print(f"Now: {self.now}")
+    #     print(f"Current Requests: {self.current_requests}")
+    #     print(f"Completed Requests: {self.completed_requests}")
+    #     print(f"Schedulable Requests: {requests.keys()}")
+    #     print(f"Current Resources: {self.current_resources}")
+
+
+    #     # Determine resources
+    #     resources = {}
+    #     for res in self.current_resources:
+    #         resources[res] = self.base_resources[res]
+
+    #     # TODO: Remove windows for resources that have observations currently running
+    #     #
+    #     # Do this here.
+    #     #
+
+    #     sched = Scheduler(self.now, self.horizon, self.slice_size, resources, self.proposals, requests)
+    #     sched.calculate_free_windows()
+    #     sched.build_data_structures()
+    #     sched.build_model()
+    #     sched.solve_model()
+
+    #     scheduled = sched.return_solution(False)
+    #     self.save_solution(scheduled)
 
 
     def run_simulation(self):
@@ -173,13 +255,29 @@ class SchedulerSimulation(object):
                     break
 
             # Run Scheduler
-            print(f"Running after {i+1} events...")
-            self.run_scheduler()
+            requests, resources = self.prepare_scheduler()
+            self.run_scheduler(requests, resources)
 
             # Move to the next event
             i += 1
 
+        self.prepare_scheduler(final=True)
+        self.display_simulation_results()
 
-    def save_solution(self, scheduled):
-        # print(scheduled)
-        self.scheduler_results.append(scheduled)
+
+    def display_simulation_results(self):
+        print("\nSimulation Complete.")
+
+        scheduled_by_resource = {}
+        for r in self.completed_requests.values():
+            resource = r["resource"]
+            if resource not in scheduled_by_resource:
+                scheduled_by_resource[resource] = []
+            scheduled_by_resource[resource].append(r)
+
+        for resource, res_list in scheduled_by_resource.items():
+            res_list.sort(key=lambda x: x["start"])
+            print(f"Scheduled requests for '{resource}'")
+            for r in res_list:
+                print(f"{r['rID']}: {r['start']} - {r['end']} ({r['duration']}), Priority = {r['priority']}")
+            print()
