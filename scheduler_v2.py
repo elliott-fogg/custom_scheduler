@@ -181,36 +181,6 @@ class Scheduler(object):
         self.log("Model optimized", 1)
 
 
-    # def interpret_solution(self):
-    #     scheduled = []
-
-    #     for i in range(len(self.solution)):
-    #         if self.solution[i] == 1:
-    #             # print(i, self.yik[i])
-    #             scheduled.append(self.yik[i]) # ID, start_w_idx, priority, resource, isScheduled(dud), possible_start
-
-    #     scheduled.sort(key=lambda x: x[5]) # Sort by Starting Window
-    #     scheduled.sort(key=lambda x: x[3]) # Sort by Resource
-
-    #     print("\nTotal Priority: {}\nScheduled Observations: {}\n---".format(self.model.ObjVal, len(scheduled)))
-
-    #     for i in range(len(scheduled)):
-    #         s = scheduled[i]
-
-    #         rid = s[0]
-    #         resource = s[3]
-
-    #         r = self.requests[str(rid)]
-    #         start_time = s[5].internal_start
-    #         duration = r["duration"]
-    #         end_time = start_time + duration
-
-    #         print("Request {}: Resource={}, S/E(D)={}/{}({}), Priority = {}".format(
-    #                 rid, resource, start_time, end_time, duration, r["effective_priority"]))
-
-    #     print("---\n")
-
-
     def return_solution(self, display=False):
         scheduled = []
         for i in range(len(self.solution)):

@@ -141,12 +141,6 @@ class Injection(object):
         }
 
 
-# def injection_from_json(injection_json):
-#     return Injection(injection_json["injection_time"],
-#                      injection_json["injection_type"],
-#                      injection_json["injection_data"])
-
-
 class TelescopeEvent(Injection):
     def __init__(self, injection_time, resource, closed):
         data = {"resource": resource, "closed": closed}
