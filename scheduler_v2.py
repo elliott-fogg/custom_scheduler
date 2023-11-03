@@ -9,13 +9,19 @@ from scheduler_utils import PossibleStart, TimeSegment, overlap_time_segments
 
 class Scheduler(object):
     def __init__(self, now, horizon, slice_size, 
-                 resources, proposals, requests):
+                 resources, proposals, requests, verbose=1):
         self.now = now
         self.horizon = horizon          # Can we get rid of this?
         self.slice_size = slice_size
         self.resources = resources
         self.proposals = proposals
         self.requests = requests
+        self.verbose_level = verbose
+
+
+    def log(self, text, log_level):
+        if log_level <= self.verbose_level:
+            print(text)
 
 
     def calculate_free_windows(self):
@@ -153,12 +159,12 @@ class Scheduler(object):
         m.update()
 
         self.model = m
-        print("Model constructed")
+        self.log("Model constructed", 1)
 
 
     def write_model(self, filename="test_model.mps"):
         self.model.write(filename)
-        print(f"Model written to file: {filename}")
+        self.log(f"Model written to file: {filename}", 1)
 
 
     def load_model(filename="test_model.mps"):
@@ -172,39 +178,92 @@ class Scheduler(object):
             print(f"Model Status not optimal: {self.model.Status}")
             return
         self.solution = self.model.getAttr("X")
-        print("Model optimized")
+        self.log("Model optimized", 1)
 
 
-    def interpret_solution(self):
+    # def interpret_solution(self):
+    #     scheduled = []
+
+    #     for i in range(len(self.solution)):
+    #         if self.solution[i] == 1:
+    #             # print(i, self.yik[i])
+    #             scheduled.append(self.yik[i]) # ID, start_w_idx, priority, resource, isScheduled(dud), possible_start
+
+    #     scheduled.sort(key=lambda x: x[5]) # Sort by Starting Window
+    #     scheduled.sort(key=lambda x: x[3]) # Sort by Resource
+
+    #     print("\nTotal Priority: {}\nScheduled Observations: {}\n---".format(self.model.ObjVal, len(scheduled)))
+
+    #     for i in range(len(scheduled)):
+    #         s = scheduled[i]
+
+    #         rid = s[0]
+    #         resource = s[3]
+
+    #         r = self.requests[str(rid)]
+    #         start_time = s[5].internal_start
+    #         duration = r["duration"]
+    #         end_time = start_time + duration
+
+    #         print("Request {}: Resource={}, S/E(D)={}/{}({}), Priority = {}".format(
+    #                 rid, resource, start_time, end_time, duration, r["effective_priority"]))
+
+    #     print("---\n")
+
+
+    def return_solution(self, display=False):
         scheduled = []
-
         for i in range(len(self.solution)):
             if self.solution[i] == 1:
-                # print(i, self.yik[i])
-                scheduled.append(self.yik[i]) # ID, start_w_idx, priority, resource, isScheduled(dud), possible_start
+                entry = self.yik[i]
+                
+                # Get relevant parameters
+                rid = entry[0]
+                resource = entry[3]
+                start_time = entry[5].internal_start
+                duration = self.requests[str(rid)]["duration"]
+                end_time = start_time + duration
+                priority = self.requests[str(rid)]["effective_priority"]
 
-        scheduled.sort(key=lambda x: x[5]) # Sort by Starting Window
-        scheduled.sort(key=lambda x: x[3]) # Sort by Resource
+                # Add for saving
+                request_dict = {
+                    "rID": rid,
+                    "resource": resource,
+                    "start": start_time,
+                    "end": end_time,
+                    "duration": duration,
+                    "priority": priority
+                }
 
-        print("\nTotal Priority: {}\nScheduled Observations: {}\n---".format(self.model.ObjVal, len(scheduled)))
+                scheduled.append(request_dict)
 
-        for i in range(len(scheduled)):
-            s = scheduled[i]
+        if self.verbose_level >= 1:
+            self.print_solution(scheduled)
 
-            rid = s[0]
-            resource = s[3]
+        scheduled_dict = {}
+        scheduled_dict["scheduled"] = {str(s["rID"]): s for s in scheduled}
+        scheduled_dict["now"] = self.now
+        return scheduled_dict
 
-            r = self.requests[str(rid)]
-            start_time = s[5].internal_start
-            duration = r["duration"]
-            end_time = start_time + duration
 
-            print("Request {}: Resource={}, S/E(D)={}/{}({}), Priority = {}".format(
-                    rid, resource, start_time, end_time, duration, r["effective_priority"]))
+    def print_solution(self, scheduled):
+        scheduled.sort(key=lambda x: x["start"])
+        scheduled.sort(key=lambda x: x["resource"])
 
+        print("---\nTotal Priority: {}\nScheduled Observations: {}".format(
+                                            self.model.ObjVal, len(scheduled)))
+
+        for s in scheduled:
+            print("RequestID: {}, "
+                  "Resource: {}, "
+                  "S/E(D): {}/{}({}), "
+                  "Priority: {}".format(s["rID"],
+                                        s["resource"],
+                                        s["start"],
+                                        s["end"],
+                                        s["duration"],
+                                        s["priority"])
+                  )
         print("---\n")
 
 
-    def return_solution(self):
-        # Return solution in a hot-start-able format
-        pass

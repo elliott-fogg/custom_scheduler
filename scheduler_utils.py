@@ -89,62 +89,62 @@ def overlap_time_segments(seg1, seg2, now):
 
 class Injection(object):
     def __init__(self, injection_time, injection_type, data=None):
-        self.injection_time = injection_time
-        self.injection_type = injection_type
+        self.time = injection_time
+        self.type = injection_type
         self.data = data
 
     def __str__(self):
-        return f"{self.injection_type}_{self.injection_time}"
+        return f"{self.type}_{self.time}"
     
     def __lt__(self, other):
-        if self.injection_time == other.injection_time:
+        if self.time == other.time:
             return self.type_lt(other)
         else:
-            return self.injection_time < other.injection_time
+            return self.time < other.time
 
     def __gt__(self, other):
-        if self.injection_time == other.injection_time:
+        if self.time == other.time:
             return self.type_gt(other)
         else:
-            return self.injection_time > other.injection_time
+            return self.time > other.time
 
     def __eq__(self, other):
-        if self.injection_time == other.injection_time:
+        if self.time == other.time:
             return self.type_eq(other)
         else:
             return False
 
     def type_lt(self, other):
-        if self.injection_type == "request": # Either Request vs Request, or Request vs Resource
+        if self.type == "request": # Either Request vs Request, or Request vs Resource
             return False
-        elif other.injection_type == "resource": # Either Resource vs Resource, or Request vs Resource
+        elif other.type == "resource": # Either Resource vs Resource, or Request vs Resource
             return False
         else:
             return True # Must be Resource vs Request
 
     def type_gt(self, other):
-        if self.injection_type == "resource":
+        if self.type == "resource":
             return False
-        elif other.injection_type == "request":
+        elif other.type == "request":
             return False
         else: return True
 
     def type_eq(self, other):
-        return self.injection_type == other.injection_type
+        return self.type == other.type
 
 
     def to_json(self):
         return {
-            "injection_time": self.injection_time,
-            "injection_type": self.injection_type,
+            "injection_time": self.time,
+            "injection_type": self.type,
             "injection_data": self.data
         }
 
 
-def injection_from_json(injection_json):
-    return Injection(injection_json["injection_time"],
-                     injection_json["injection_type"],
-                     injection_json["injection_data"])
+# def injection_from_json(injection_json):
+#     return Injection(injection_json["injection_time"],
+#                      injection_json["injection_type"],
+#                      injection_json["injection_data"])
 
 
 class TelescopeEvent(Injection):
