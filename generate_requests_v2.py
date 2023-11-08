@@ -66,31 +66,23 @@ class RequestInjection(Injection):
 
 
 class RequestGeneratorV2(object):
-    def __init__(self, start_time, horizon, num_proposals, slice_size):
+    def __init__(self, start_time, horizon, num_proposals, slice_size, 
+                 num_telescopes):
         self.start_time = start_time
         self.slice_size = slice_size
         self.horizon = horizon
         self.num_proposals = num_proposals
         self.injections = []
         self.request_count = 0
-
-
-    def auto_run(self, request_injection_dict, num_telescope_closures):
-        self.generate_input_params()
-        self.generate_requests_injections(request_injection_dict)
-        max_closure_length = int(self.horizon / 10)
-        self.generate_telescope_closures(num_telescope_closures, 
-                                         max_closure_length)
-        self.injections.sort()
-        print("Finished Request Generation V2")
-        self.save_to_file()
+        self.num_telescopes = num_telescopes
 
 
     def generate_input_params(self):
         self.end_time = self.start_time + self.horizon
-        self.resources = {"t1": time_segments(self.start_time,
-                                              self.end_time,
-                                              1, 3, use_bounds=True)}
+        self.resources = {f"t{i}": time_segments(self.start_time, self.end_time, 
+                                                 1, 3, use_bounds=True) \
+            for i in range(self.num_telescopes)}
+
         self.proposals = {}
         for i in range(self.num_proposals):
             proposal_name = f"proposal_{i}"
@@ -119,30 +111,44 @@ class RequestGeneratorV2(object):
         return requests
 
 
-    def generate_requests_injections(self, injection_dict):
+    def generate_single_request_injection(self, inj_time, num_requests, 
+                                          min_length=60, max_length=10800):
+        requests = self.generate_requests(num_requests, inj_time, 
+                                          min_length, max_length)
+        self.injections.append(RequestInjection(inj_time, requests))
 
+
+    def generate_requests_injections(self, injection_dict):
         for injection_time, request_num in injection_dict.items():
-            requests = self.generate_requests(request_num, injection_time)
-            self.injections.append(RequestInjection(injection_time,
-                                                    requests))
+            self.generate_single_request_injection(injection_time, num_requests)
+
+
+    def generate_single_telescope_closure(self, inj_time, resource, 
+                                          end_time=None, max_close_time=None):
+        closure_start = inj_time
+        if end_time != None:
+            closure_end = end_time
+
+        else:
+            length = random.randint(0, self.horizon - inj_time)
+            if max_close_time != None:
+                length = min(length, max_close_time)
+            closure_time = closure_start + length
+
+        data = {
+            "start_time": closure_start,
+            "end_time": closure_end,
+            "resource": resource
+        }
+
+        self.injections.append(ResourceInjection(closure_start, data))
 
 
     def generate_telescope_closures(self, num_closures, max_close_time):
         for i in range(num_closures):
-            # closure_start = random.randint(self.start_time, self.end_time)
-            closure_start = random.randint(self.start_time, self.end_time)
-            length = min(self.end_time - closure_start, max_close_time)
-            closure_end = closure_start + length
-
-            resource = "t1"
-
-            data = {
-                "start_time": closure_start,
-                "end_time": closure_end,
-                "resource": "t1"
-            }
-
-            self.injections.append(ResourceInjection(closure_start, data))
+            inj_time = random.randint(self.start_time, self.horizon-2000)
+            self.generate_single_telescope_closure(inj_time, "t1", 
+                                                   max_close_time=max_close_time)
 
 
     def save_to_file(self, filename=None, dirname="sample_input"):
@@ -170,6 +176,17 @@ class RequestGeneratorV2(object):
         with open(filepath, "w") as f:
             json.dump(output, f, indent=4)
         print(f"Saved to file at '{filepath}'")
+
+
+    def auto_run(self, request_injection_dict, num_telescope_closures):
+        self.generate_input_params()
+        self.generate_requests_injections(request_injection_dict)
+        max_closure_length = int(self.horizon / 10)
+        self.generate_telescope_closures(num_telescope_closures, 
+                                         max_closure_length)
+        self.injections.sort()
+        print("Finished Request Generation V2")
+        self.save_to_file()
 
 
 ################################################################################
