@@ -1,5 +1,6 @@
 from gurobipy import Model, GRB, tuplelist, quicksum
 from gurobipy import read as gurobi_read_model
+from gurobipy import Env as gpEnv
 import json
 import random
 import math
@@ -17,6 +18,10 @@ class Scheduler(object):
         self.proposals = proposals
         self.requests = requests
         self.verbose_level = verbose
+
+        self.env = gpEnv(empty=True)
+        self.env.setParam("OutputFlag", 0)
+        self.env.start()
 
 
     def log(self, text, log_level):
@@ -115,7 +120,7 @@ class Scheduler(object):
         yik = self.yik
         aikt = self.aikt
 
-        m = Model("Test Schedule")
+        m = Model("Test Schedule", env=self.env)
 
         requestLocations = tuplelist()
         scheduled_vars = []
@@ -169,11 +174,11 @@ class Scheduler(object):
 
 
     def load_model(filename="test_model.mps"):
-        self.model = gurobi_read_model(filename)
+        self.model = gurobi_read_model(filename, env=self.env)
 
 
     def solve_model(self):
-        self.model.setParam("OutputFlag", False) # Disable output from model?
+        # self.model.setParam("OutputFlag", False) # Disable output from model?
         self.model.optimize()
         if self.model.Status != GRB.OPTIMAL:
             print(f"Model Status not optimal: {self.model.Status}")

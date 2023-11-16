@@ -27,7 +27,7 @@ class SchedulerSimulation(object):
         self.base_resources = input_data["input_parameters"]["resources"]
         # The telescopes that are available at 'self.now'
         self.current_resources = {res for res in self.base_resources}
-        print("START - CURRENT RESOURCES", self.current_resources)
+        # print("START - CURRENT RESOURCES", self.current_resources)
         # The time impacts of observations running at 'self.now'
         self.SOMETHING = []
         # A list of all closures to allow us to "foresee" them
@@ -75,7 +75,7 @@ class SchedulerSimulation(object):
                              )
         self.events.sort()
 
-        print(f"{len(self.events)} Events loaded.")
+        # print(f"{len(self.events)} Events loaded.")
 
 
     def process_event(self, event):
@@ -135,12 +135,12 @@ class SchedulerSimulation(object):
                         # the required time from the relevant resource.
                         occupied_requests.append(rid)
                         occupied_resources[r["resource"]] = r["end"]
-                        print(f"Occupied Request: {rid}")
+                        # print(f"Occupied Request: {rid}")
 
                     else:
                         # Request has been interrupted. Reissue it as if it was
                         # never scheduled.
-                        print(f"Interrupted Request: {rid}")
+                        # print(f"Interrupted Request: {rid}")
                         pass
 
         # Filter requests
@@ -160,18 +160,18 @@ class SchedulerSimulation(object):
                                                    occupied_resources[res])
             resources[res] = resource_times
 
-        print("Scheduling Run Information:")
-        print(f"Now: {self.now}")
-        print(f"Current Requests: {self.current_requests}")
-        print(f"Completed Requests: {list(self.completed_requests.keys())}")
-        print(f"Schedulable Requests: {list(requests.keys())}")
-        print(f"Current Resources: {list(self.current_resources)}")
+        # print("Scheduling Run Information:")
+        # print(f"Now: {self.now}")
+        # print(f"Current Requests: {self.current_requests}")
+        # print(f"Completed Requests: {list(self.completed_requests.keys())}")
+        # print(f"Schedulable Requests: {list(requests.keys())}")
+        # print(f"Current Resources: {list(self.current_resources)}")
 
         return requests, resources
 
 
     def run_scheduler(self, requests, resources):
-        sched = Scheduler(self.now, self.horizon, self.slice_size, resources, self.proposals, requests)
+        sched = Scheduler(self.now, self.horizon, self.slice_size, resources, self.proposals, requests, verbose=0)
         sched.calculate_free_windows()
         sched.build_data_structures()
         sched.build_model()
@@ -262,7 +262,7 @@ class SchedulerSimulation(object):
             i += 1
 
         self.prepare_scheduler(final=True)
-        self.display_simulation_results()
+        # self.display_simulation_results()
 
 
     def display_simulation_results(self):
@@ -281,3 +281,8 @@ class SchedulerSimulation(object):
             for r in res_list:
                 print(f"{r['rID']}: {r['start']} - {r['end']} ({r['duration']}), Priority = {r['priority']}")
             print()
+
+
+
+    def clear_results(self):
+        self.completed_requests = {}
