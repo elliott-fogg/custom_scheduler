@@ -156,8 +156,9 @@ class RequestGeneratorV2(object):
             file_prefix = "sample_input_v2_"
             file_index = 0
             while True:
-                filepath = f"{dirname}/{file_prefix}{file_index}.json"
-                if os.path.isfile(filepath):
+                filename = f"{file_prefix}{file_index}.json"
+                temp_path = f"{dirname}/{filename}.json"
+                if os.path.isfile(temp_path):
                     file_index += 1
                 else:
                     break
@@ -172,6 +173,8 @@ class RequestGeneratorV2(object):
             },
             "injections": [inj.to_json() for inj in self.injections]
         }
+
+        filepath = os.path.join(dirname, filename)
 
         with open(filepath, "w") as f:
             json.dump(output, f, indent=4)
