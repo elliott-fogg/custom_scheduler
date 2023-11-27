@@ -1,5 +1,4 @@
 import random, json, math, os
-random.seed(3)
 
 class Injection(object):
     def __init__(self, injection_time, injection_type, data=None):
@@ -151,6 +150,21 @@ class RequestGeneratorV2(object):
                                                    max_close_time=max_close_time)
 
 
+    def output_to_json(self):
+        output = {
+            "input_parameters": {
+                "start_time": self.start_time,
+                "slice_size": self.slice_size,
+                "horizon": self.horizon,
+                "resources": self.resources,
+                "proposals": self.proposals
+            },
+            "injections": [inj.to_json() for inj in self.injections]
+        }
+
+        return output
+
+
     def save_to_file(self, filename=None, dirname="sample_input"):
         if filename == None:
             file_prefix = "sample_input_v2_"
@@ -163,16 +177,7 @@ class RequestGeneratorV2(object):
                 else:
                     break
 
-        output = {
-            "input_parameters": {
-                "start_time": self.start_time,
-                "slice_size": self.slice_size,
-                "horizon": self.horizon,
-                "resources": self.resources,
-                "proposals": self.proposals
-            },
-            "injections": [inj.to_json() for inj in self.injections]
-        }
+        output = self.output_to_json()
 
         filepath = os.path.join(dirname, filename)
 
