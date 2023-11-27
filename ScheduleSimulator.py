@@ -8,8 +8,51 @@ import os
 from scheduler_utils import TimeSegment, Injection, TelescopeEvent, RequestEvent, cut_time_segments
 
 class SchedulerSimulation(object):
-    def __init__(self, input_filepath):
-        self.load_file(input_filepath)
+    def __init__(self, filepath=None, data=None):
+        if filepath != None:
+            self.load_file(filepath)
+        elif data != None:
+            self.load_data(data)
+        else:
+            print("Neither filepath nor data provided. Aborting.")
+            print(data)
+            return
+
+
+    def load_data(self, input_data):
+        # Load Initial Parameters
+        self.start_time = input_data["input_parameters"]["start_time"]
+        self.horizon = input_data["input_parameters"]["horizon"]
+        self.slice_size = input_data["input_parameters"]["slice_size"]
+        self.proposals = input_data["input_parameters"]["proposals"]
+
+        # RESOURCES (Telescopes)
+        # The natural rise-set times of each telescope, predictable.
+        self.base_resources = input_data["input_parameters"]["resources"]
+        # The telescopes that are available at 'self.now'
+        self.current_resources = {res for res in self.base_resources}
+        # print("START - CURRENT RESOURCES", self.current_resources)
+        # The time impacts of observations running at 'self.now'
+        self.SOMETHING = []
+        # A list of all closures to allow us to "foresee" them
+        self.all_closures = {res: [] for res in self.base_resources}
+
+        # REQUESTS
+        # A total collection of all events in this Simulation
+        self.all_requests = {}
+        # A list of the request IDs that have been created at 'self.now'
+        self.current_requests = []
+        # A dict of the requests that have been completed in previous schedules
+        self.completed_requests = {}
+
+        # EVENTS - changes to requests or resources that trigger another scheduler run
+        self.events = []
+
+        # RESULTS
+        # A place to log the results of each scheduler run -- THIS MIGHT HAVE TO BE ADAPTED
+        self.scheduler_results = []
+
+        self.load_events(input_data["injections"])
 
 
     def load_file(self, input_filepath):
