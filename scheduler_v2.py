@@ -4,9 +4,10 @@ from gurobipy import Env as gpEnv
 import json
 import random
 import math
+import highspy
+import time
 
 from scheduler_utils import PossibleStart, TimeSegment, overlap_time_segments
-
 
 class Scheduler(object):
     def __init__(self, now, horizon, slice_size, 
@@ -22,6 +23,14 @@ class Scheduler(object):
         self.env = gpEnv(empty=True)
         self.env.setParam("OutputFlag", 0)
         self.env.start()
+
+        self.gurobi_objective = None
+        self.gurobi_scheduled = None
+        self.gurobi_solve_time = None
+
+        self.highs_objective = None
+        self.highs_scheduled = None
+        self.highs_solve_time = None
 
 
     def log(self, text, log_level):
@@ -179,12 +188,18 @@ class Scheduler(object):
 
     def solve_model(self):
         # self.model.setParam("OutputFlag", False) # Disable output from model?
+        t1 = time.time()
         self.model.optimize()
+        t2 = time.time()
+
+        self.gurobi_solve_time = t2 - t1
+
         if self.model.Status != GRB.OPTIMAL:
             print(f"Model Status not optimal: {self.model.Status}")
             return
         self.solution = self.model.getAttr("X")
         self.log("Model optimized", 1)
+        print(len(self.yik))
 
 
     def return_solution(self, display=False):
@@ -243,3 +258,28 @@ class Scheduler(object):
         print("---\n")
 
 
+    def solve_with_highs(self):
+        self.write_model("_temp.mps")
+        h = highspy.Highs()
+        h.readModel("_temp.mps")
+        t1 = time.time()
+        h.run()
+        t2 = time.time()
+
+        self.highs_solve_time = t2 - t1
+
+        solution = h.getSolution()
+        info = h.getInfo()
+        optimal_objective = info.objective_function_value
+
+        scheduled = self.return_solution(solution.col_value)
+
+        # h_scheduled = []
+        # rv = solution.row_value
+        # for i in range(len(rv)):
+        #     if rv[i] > 0.5:
+        #         const_name = h.getRowName(i)[1]
+        #         if "one_per_reqid_constraint_" in const_name:
+        #             h_scheduled.append(const_name.replace("one_per_reqid_constraint_", ""))
+
+        return (optimal_objective, scheduled)
