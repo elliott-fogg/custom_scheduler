@@ -173,7 +173,7 @@ class Scheduler(object):
         self.log(f"Model written to file: {filename}", 1)
 
 
-    def load_model(filename="test_model.mps"):
+    def load_model(self, filename="test_model.mps"):
         self.model = gurobi_read_model(filename, env=self.env)
 
 
