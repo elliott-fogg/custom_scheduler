@@ -1,4 +1,5 @@
 import random, json, math, os
+import numpy as np
 
 class Injection(object):
     def __init__(self, injection_time, injection_type, data=None):
@@ -66,7 +67,7 @@ class RequestInjection(Injection):
 
 class RequestGeneratorV2(object):
     def __init__(self, start_time, horizon, num_proposals, slice_size, 
-                 num_telescopes):
+                 num_telescopes, num_networks=1):
         self.start_time = start_time
         self.slice_size = slice_size
         self.horizon = horizon
@@ -74,6 +75,7 @@ class RequestGeneratorV2(object):
         self.injections = []
         self.request_count = 0
         self.num_telescopes = num_telescopes
+        self.num_networks = num_networks
 
 
     def generate_input_params(self):
@@ -81,6 +83,10 @@ class RequestGeneratorV2(object):
         self.resources = {f"t{i}": time_segments(self.start_time, self.end_time, 
                                                  1, 3, use_bounds=True) \
             for i in range(self.num_telescopes)}
+
+        # Split resources into independent networks (defaults to 1 network)
+        all_resources = list(self.resources.keys())
+        self.networks = np.array_split(list(self.resources.keys()), self.num_networks)
 
         self.proposals = {}
         for i in range(self.num_proposals):
@@ -90,11 +96,17 @@ class RequestGeneratorV2(object):
 
 
     def generate_requests(self, num_requests, injection_time, 
-                          request_min_length=60, request_max_length=10800):
+                          request_min_length=60, request_max_length=10800,
+                          telescope_network=None):
         requests = {}
         for i in range(num_requests):
-            windows = {r: time_segments(injection_time, self.end_time, 
-                                        1, 8) for r in self.resources}
+            if telescope_network == None:
+                windows = {r: time_segments(injection_time, self.end_time, 
+                                            1, 8) for r in self.resources}
+            else:
+                windows = {r: time_segments(injection_time, 
+                            self.end_time, 1, 8) for r in self.networks[telescope_network]}
+
             duration = random.randint(request_min_length, request_max_length)
             proposal = random.choice(list(self.proposals.keys()))
 
@@ -111,9 +123,9 @@ class RequestGeneratorV2(object):
 
 
     def generate_single_request_injection(self, inj_time, num_requests, 
-                                          min_length=60, max_length=10800):
+                                          min_length=60, max_length=10800, network=0):
         requests = self.generate_requests(num_requests, inj_time, 
-                                          min_length, max_length)
+                                          min_length, max_length, network)
         self.injections.append(RequestInjection(inj_time, requests))
 
 
