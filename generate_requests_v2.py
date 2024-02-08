@@ -130,7 +130,7 @@ class RequestGeneratorV2(object):
 
 
     def generate_requests_injections(self, injection_dict):
-        for injection_time, request_num in injection_dict.items():
+        for injection_time, num_requests in injection_dict.items():
             self.generate_single_request_injection(injection_time, num_requests)
 
 
