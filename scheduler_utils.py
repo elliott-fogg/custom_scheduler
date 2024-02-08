@@ -21,42 +21,73 @@ class PossibleStart(object):
                                                        self.slice_size)
 
 
-class TimeSegment(object):
-    def __init__(self, start, end):
-        if start < end:
-            self.start = start
-            self.end = end
+# class TimeSegment(object):
+#     def __init__(self, start, end):
+#         if start < end:
+#             self.start = start
+#             self.end = end
+#         else:
+#             raise Exception()
+
+#     def __gt__(self, other):
+#         if self.start == other.start:
+#             return self.end > other.end
+#         else:
+#             return self.start > other.start
+
+#     def __lt__(self, other):
+#         if self.start == other.start:
+#             return self.end < other.end
+#         else:
+#             return self.start < other.start
+
+#     def __eq__(self, other):
+#         return (self.start == other.start) and (self.end == other.end)
+
+#     def __repr__(self):
+#         return f"TimeSegment({self.start}, {self.end})"
+
+
+def trim_time_segments(segment_list, start_cap, end_cap):
+    trimmed_segment_list = []
+
+    segment_list.sort(key=lambda x: x["start"])
+    for s in segment_list:
+        if s["start"] < start_cap:
+            if start_cap < s["end"]:
+                # Segment straddles start_cap
+                trimmed_segment_list.append({"start": start_cap, "end": s["end"]})
+            else:
+                # Whole segment is before start_cap
+                continue
+
+
+        elif end_cap < s["end"]:
+            if s["start"] < end_cap:
+                # Segment straddles end_cap
+                trimmed_segment_list.append({"start": s["start"], "end": end_cap})
+            else:
+                # Whole segment is after end_cap
+                continue
+
         else:
-            raise Exception()
+            # Segment is within bounds, does not need to be changed
+            trimmed_segment_list.append(s)
 
-    def __gt__(self, other):
-        if self.start == other.start:
-            return self.end > other.end
-        else:
-            return self.start > other.start
-
-    def __lt__(self, other):
-        if self.start == other.start:
-            return self.end < other.end
-        else:
-            return self.start < other.start
-
-    def __eq__(self, other):
-        return (self.start == other.start) and (self.end == other.end)
+    return trimmed_segment_list
 
 
-
-def overlap_time_segments(seg1, seg2, now, horizon):
+def overlap_time_segments(segment_list1, segment_list2):
     overlap_segments = []
     i = 0
     j = 0
 
-    seg1.sort(key=lambda x: x["start"])
-    seg2.sort(key=lambda x: x["start"])
+    segment_list1.sort(key=lambda x: x["start"])
+    segment_list2.sort(key=lambda x: x["start"])
 
-    while ((i < len(seg1)) and (j < len(seg2))):
-        s1 = seg1[i]
-        s2 = seg2[j]
+    while ((i < len(segment_list1)) and (j < len(segment_list2))):
+        s1 = segment_list1[i] # TimeSegment from list1 to compare
+        s2 = segment_list2[j] # TimeSegment from list2 to compare
 
         if s1["end"] < s2["start"]: # Current s1 is behind Current s2, move to next s1
             i += 1
@@ -66,18 +97,18 @@ def overlap_time_segments(seg1, seg2, now, horizon):
             j += 1
             continue
 
-        window_start = max([s1["start"], s2["start"], now])
+        window_start = max([s1["start"], s2["start"]])
         
         if s1["end"] < s2["end"]: # s1 ends first, move to next s1
             window_end = s1["end"]
             i += 1
             
         elif s1["end"] > s2["end"]: # s2 ends first, move to next s2
-            window_end= min(max([s2["end"], now]), horizon)
+            window_end= s2["end"]
             j += 1
 
         else: # Both segments end at the same time, move to next of both
-            window_end = min(max([s1["end"], now]), horizon)
+            window_end = s1["end"]
             i += 1
             j+= 1
 
@@ -85,6 +116,49 @@ def overlap_time_segments(seg1, seg2, now, horizon):
             overlap_segments.append({"start": window_start, "end": window_end})
             
     return overlap_segments
+
+
+
+
+# def overlap_time_segments(seg1, seg2, now, horizon):
+#     overlap_segments = []
+#     i = 0
+#     j = 0
+
+#     seg1.sort(key=lambda x: x["start"])
+#     seg2.sort(key=lambda x: x["start"])
+
+#     while ((i < len(seg1)) and (j < len(seg2))):
+#         s1 = seg1[i]
+#         s2 = seg2[j]
+
+#         if s1["end"] < s2["start"]: # Current s1 is behind Current s2, move to next s1
+#             i += 1
+#             continue
+
+#         if s2["end"] < s1["start"]: # Current s2 is behind Current s1, move to next s2
+#             j += 1
+#             continue
+
+#         window_start = max([s1["start"], s2["start"], now])
+        
+#         if s1["end"] < s2["end"]: # s1 ends first, move to next s1
+#             window_end = s1["end"]
+#             i += 1
+            
+#         elif s1["end"] > s2["end"]: # s2 ends first, move to next s2
+#             window_end= min(max([s2["end"], now]), horizon)
+#             j += 1
+
+#         else: # Both segments end at the same time, move to next of both
+#             window_end = min(max([s1["end"], now]), horizon)
+#             i += 1
+#             j+= 1
+
+#         if window_start != window_end:
+#             overlap_segments.append({"start": window_start, "end": window_end})
+            
+#     return overlap_segments
 
 
 def cut_time_segments(seg1, cut_start, cut_end):
