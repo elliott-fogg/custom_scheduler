@@ -1,6 +1,8 @@
 from gurobipy import Model, GRB, tuplelist, quicksum
 from gurobipy import read as gurobi_read_model
-from scheduler_v2 import Scheduler
+# from scheduler_v2 import Scheduler
+# from scheduler_v3 import SchedulerV3 as Scheduler
+from scheduler_v4 import SchedulerV4 as Scheduler
 import json
 import random
 import math
@@ -219,63 +221,9 @@ class SchedulerSimulation(object):
         sched.build_data_structures()
         sched.build_model()
         sched.solve_model()
+        self.last_sched = sched
         scheduled = sched.return_solution(False)
         self.scheduler_results.append(scheduled)
-
-
-    # def run_scheduler(self):
-    #     if len(self.scheduler_results) == 0:
-    #         # We're in the first run, don't need to account for past requests
-    #         pass
-    #     else:
-    #         for rid, r in self.scheduler_results[-1]["scheduled"].items():
-    #             if r["start"] > self.now:
-    #                 continue
-
-    #             elif r["end"] <= self.now:
-    #                 self.completed_requests.add(rid)
-
-    #             else:
-    #                 print(rid)
-    #                 print(r)
-    #                 # These observations are only partway completed.
-    #                 # Assume they are locked into the schedule, and incorporate
-    #                 # them into the blocked off time of the resources.
-    #                 # TODO
-    #                 self.completed_requests.add(rid) # THIS NEEDS TO BE EXTENDED UPON
-
-    #     # Determine requests
-    #     requests = {}
-    #     for reqID in self.current_requests:
-    #         if reqID not in self.completed_requests:
-    #             requests[reqID] = self.all_requests[reqID]
-
-    #     print("Scheduling Run Information:")
-    #     print(f"Now: {self.now}")
-    #     print(f"Current Requests: {self.current_requests}")
-    #     print(f"Completed Requests: {self.completed_requests}")
-    #     print(f"Schedulable Requests: {requests.keys()}")
-    #     print(f"Current Resources: {self.current_resources}")
-
-
-    #     # Determine resources
-    #     resources = {}
-    #     for res in self.current_resources:
-    #         resources[res] = self.base_resources[res]
-
-    #     # TODO: Remove windows for resources that have observations currently running
-    #     #
-    #     # Do this here.
-    #     #
-
-    #     sched = Scheduler(self.now, self.horizon, self.slice_size, resources, self.proposals, requests)
-    #     sched.calculate_free_windows()
-    #     sched.build_data_structures()
-    #     sched.build_model()
-    #     sched.solve_model()
-
-    #     scheduled = sched.return_solution(False)
-    #     self.save_solution(scheduled)
 
 
     def run_simulation(self):
