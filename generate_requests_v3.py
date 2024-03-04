@@ -1,6 +1,7 @@
 import random, json, math, os
 import numpy as np
-from scheduler_utils import TimeSegment, overlap_time_segments, trim_time_segments
+from scheduler_utils import overlap_time_segments, trim_time_segments
+import math
 
 SECONDS_IN_DAY = 24 * 60 * 60
 
@@ -15,7 +16,7 @@ default_slice_size = 300
 # Approximated from times found in telescope_times.json
 # Stored as floats representing the rounded hour in 24hr time
 # E.g. "04:00:00" = 4.0, "23:30:00" = 23.5
-estimated_telescope_times: {
+estimated_telescope_times = {
     "COJ": {
         "start": 8,
         "end": 20
@@ -120,7 +121,7 @@ class RequestGeneratorV3(object):
         # Must be from a 24hr clock (so < 1 day, so < 24*60*60)
         # Defaults to be midnight.
 
-        self.horizon_days = self.horizon_days
+        self.horizon_days = horizon_days
         self.horizon = self.now + horizon_days*24*60*60
         self.slice_size=slice_size
 
@@ -130,21 +131,25 @@ class RequestGeneratorV3(object):
             self.networks = self.generate_sub_networks(num_networks=1)
         else:
             self.resources = self.generate_telescope_times(num_telescopes=num_telescopes)
-            self.resources = self.generate_sub_networks(num_networks=num_networks)
+            self.networks = self.generate_sub_networks(num_networks=num_networks)
 
         # Generating Proposal Information
         if proposals_dict != None:
             self.proposals = proposals_dict
         else:
-            self.generate_default_proposals(num_proposals)
+            self.proposals = self.generate_default_proposals(num_proposals)
+            # self.generate_default_proposals(num_proposals)
 
         # Make variables for used data
         self.injections = []
         self.request_count = 0
 
+        # Load request pattern information
+        pattern_data = json.load(open("../archive_scraper/observation_patterns_v1.json", "r"))
+        self.observation_patterns = sorted(pattern_data.values(), key=lambda x: x["cumulative_probability"])
+
 
     def generate_telescope_times(self, num_telescopes):
-        print("TELESCOPE TIMES")
         telescopes = {}
         telescope_options = list(estimated_telescope_times.keys())
 
@@ -156,7 +161,6 @@ class RequestGeneratorV3(object):
 
             telescopes[f"telescope_{i}"] = self.propagate_telescope_times(start_time, end_time)
 
-        print(telescopes)
         return telescopes
 
 
@@ -189,12 +193,6 @@ class RequestGeneratorV3(object):
         # e.g. the 2m telescopes vs the 1m telescopes vs the 0.4m telescopes.
         return np.array_split(list(self.resources.keys()), num_networks)
 
-        # networks = {}
-        # for i in range(len(num_networks)):
-        #     network_telescopes = self.generate_telescope_times(num_telescopes=num_telescopes_per_network)
-        #     networks[f"network_{i}"] = network_telescopes
-        # return networks
-
 
     def generate_default_proposals(self, num_proposals):
         proposals = {}
@@ -205,54 +203,50 @@ class RequestGeneratorV3(object):
         return proposals
 
 
-    # def generate_input_params(self):
-    #     self.end_time = self.start_time + self.horizon
-    #     self.resources = {f"t{i}": time_segments(self.start_time, self.end_time, 
-    #                                              1, 3, use_bounds=True) \
-    #         for i in range(self.num_telescopes)}
-
-    #     # Split resources into independent networks (defaults to 1 network)
-    #     all_resources = list(self.resources.keys())
-    #     self.networks = np.array_split(list(self.resources.keys()), self.num_networks)
-
-    #     self.proposals = {}
-    #     for i in range(self.num_proposals):
-    #         proposal_name = f"proposal_{i}"
-    #         tac_priority = random.randint(5, 40)
-    #         self.proposals[proposal_name] = {"tac_priority": tac_priority}
+    def get_pattern(self):
+        rnum = random.random()
+        for p in self.observation_patterns:
+            if rnum <= p["cumulative_probability"]:
+                return p["pattern"]
 
 
-    def generate_requests(self, num_requests, injection_time, 
-                          request_min_length=60, request_max_length=10800,
-                          telescope_network=None):
-        requests = {}
-        for i in range(num_requests):
-            if telescope_network == None:
-                windows = {r: time_segments(injection_time, self.end_time, 
-                                            1, 8) for r in self.resources}
-            else:
-                windows = {r: time_segments(injection_time, 
-                            self.end_time, 1, 8) for r in self.networks[telescope_network]}
+    def generate_request(self, injection_time, telescope_network=None):
+        # Pick a pattern
+        # Pick a time a certain distance from the injection time
+        # Pick an availability window size
+        # Pick a network of telescopes
+        pattern = self.get_pattern()
+        total_pattern_length = int(sum(pattern))
+        
+        # TO FIX: Work out a way of systematically generating an availability window.
+        availability_window_length = int(round(((random.random() * 9) + 1) * total_pattern_length))
 
-            duration = random.randint(request_min_length, request_max_length)
-            proposal = random.choice(list(self.proposals.keys()))
+        start_time = int(round(random.random() * self.horizon * 0.5))
 
-            requests[self.request_count] = {
-                "windows": windows,
-                "duration": duration,
-                "proposal": proposal,
-                "resID": self.request_count
-            }
+        if telescope_network == None:
+            windows = {r: [{"start": start_time, "end": start_time + availability_window_length}] \
+                for r in self.resources}
+        else:
+            windows = {r: [{"start": start_time, "end": start_time + availability_window_length}] \
+                for r in self.networks[telescope_network]}
 
-            self.request_count += 1     # Make sure that each request has a unique ID
+        proposal = random.choice(list(self.proposals.keys()))
 
-        return requests
+        requestID = self.request_count
 
+        self.request_count += 1
+        
+        return {
+            "windows": windows,
+            "duration": total_pattern_length,
+            "proposal": proposal,
+            "resID": requestID
+        }
+        
 
-    def generate_single_request_injection(self, inj_time, num_requests, 
-                                        min_length=60, max_length=10800, network=0):
-        requests = self.generate_requests(num_requests, inj_time, 
-                                          min_length, max_length, network)
+    def generate_single_request_injection(self, inj_time, num_requests, network=0):
+        new_requests = [self.generate_request(inj_time, network) for i in range(num_requests)]
+        requests = {r["resID"]: r for r in new_requests}
         self.injections.append(RequestInjection(inj_time, requests))
 
 
@@ -292,7 +286,7 @@ class RequestGeneratorV3(object):
     def output_to_json(self):
         output = {
             "input_parameters": {
-                "start_time": self.start_time,
+                "start_time": self.now,
                 "slice_size": self.slice_size,
                 "horizon": self.horizon,
                 "resources": self.resources,
@@ -306,7 +300,7 @@ class RequestGeneratorV3(object):
 
     def save_to_file(self, filename=None, dirname="sample_input"):
         if filename == None:
-            file_prefix = "sample_input_v2_"
+            file_prefix = "sample_input_v3_"
             file_index = 0
             while True:
                 filename = f"{file_prefix}{file_index}.json"
@@ -332,108 +326,5 @@ class RequestGeneratorV3(object):
         self.generate_telescope_closures(num_telescope_closures, 
                                          max_closure_length)
         self.injections.sort()
-        print("Finished Request Generation V2")
+        print("Finished Request Generation V3")
         self.save_to_file()
-
-
-################################################################################
-
-def time_segments(start, end, num_min=1, num_max=5, use_bounds=False):
-    segments = random.randint(num_min, num_max)
-    boundaries = []
-    if use_bounds:
-        segments -= 1
-        boundaries += [start, end]
-    boundaries += [random.randint(start, end) for x in range(2*segments)]
-    boundaries.sort()
-    windows = [{"start": boundaries[i], "end": boundaries[i+1]} for i in range(0, len(boundaries), 2)]
-    return windows
-
-
-### MAIN #######################################################################
-
-if __name__ == "__main__":
-    print("Running Request Generation V2...")
-    request_injection_dict = {1000: 5, 2000: 5, 3000: 5}
-    rg2 = RequestGeneratorV2(0, 60*60*24*3, 5, 300)
-    rg2.auto_run(request_injection_dict, 3)
-
-
-
-### Out Of Date Code ###########################################################
-
-    # def generate_telescope_times(self, num_telescopes, num_networks):
-    #     telescopes = {}
-    #     telescope_options = list(estimated_telescope_times.keys())
-    #     for i in range(num_telescopes):
-    #         # Assume the opening hours for a random telescope site
-    #         site_name = random.choice(telescope_options)
-    #         hours = estimated_telescope_times[site_name]
-    #         start_time = hours["start"] * 60 * 60
-    #         end_time = hours["end"] * 60 * 60
-
-    #         open_hours = []
-
-    #         seconds_in_day = 24 * 60 * 60
-
-    #         if start_time > end_time:
-    #             start_time -= seconds_in_day
-
-    #         open_hours = [TimeSegment(start_time + i * self.horizon)]
-
-
-    #         # day_offset = 0
-    #         # end_offset = 0
-
-    #         # if start_time < end_time:
-    #         #     if start_time <= self.now:
-    #         #         day_offset = 1
-
-    #         #         if self.now <= end_time:
-    #         #             open_hours.append({"start": self.now, "end": end_time})
-
-    #         # else:
-    #         #     # end_time < start_time, so we need to advance the end_time,
-    #         #     # after checking if we need a window between NOW and end_time.
-    #         #     end_offset = 1
-
-    #         #     if self.now <= end_time:
-    #         #         open_hours.append({"start": self.now, "end": end_time})
-
-    #         #     elif self.now >= start_time:
-    #         #         open_hours.append({"start": self.now, "end": end_time + seconds_in_day})
-
-
-    #         # if start_open:
-    #         #     open_hours.append{"start": current_time, end: end_seconds}
-    #         #     current_time = end_time
-    #         #     end_seconds += 24 * 60 * 60
-
-    #         # let D = (24*60*60) = seconds in a day
-
-    #         # For NOW < start < end:
-    #         # For i in range(self.horizon_days + 3):
-    #         #   Generate pairs of (start+i*D, end+i*D)
-
-    #         # For start < NOW < end:
-    #         # Generate pair of (NOW, end)
-    #         # For i in range(1, self.horizon_days + 3):
-    #         #   Generate pairs of (start+i*D, end+i*D)
-
-    #         # For start < end < NOW:
-    #         # For i in range(1, self.horizon_days + 3):
-    #         #   Generate pairs of (start+i*D, end+i*D)
-
-    #         # For NOW < end < start:
-    #         # Generate pair of (Now, end)
-    #         # For i in range(0, self.horizon_days + 3):
-    #         #   Generate pairs of (start+i*D, end+(i+1)*D)
-
-    #         # For end < NOW < start:
-    #         # For i in range(0, self.horizon_days + 3):
-    #         #   Generate pairs of (start+i*D, end+(i+1)*D)
-
-    #         # For end < start < NOW:
-    #         # Generate pair of (NOW, end+D)
-    #         # For i in range(1, self.horizon_days + 3):
-    #         #   Generate pairs of (start+i*D, end+(i+1)*D)
