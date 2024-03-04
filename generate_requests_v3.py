@@ -144,17 +144,19 @@ class RequestGeneratorV3(object):
 
 
     def generate_telescope_times(self, num_telescopes):
+        print("TELESCOPE TIMES")
         telescopes = {}
         telescope_options = list(estimated_telescope_times.keys())
 
         for i in range(num_telescopes):
             # Assume the opening hours for a random telescope site
             site = random.choice(telescope_options)
-            start_time = estimated_telescope_times[site]["start"] * 60 * 60
-            end_time = estimated_telescope_times[site]["end"] * 60 * 60
+            start_time = int(estimated_telescope_times[site]["start"] * 60 * 60)
+            end_time = int(estimated_telescope_times[site]["end"] * 60 * 60)
 
             telescopes[f"telescope_{i}"] = self.propagate_telescope_times(start_time, end_time)
 
+        print(telescopes)
         return telescopes
 
 
@@ -203,21 +205,21 @@ class RequestGeneratorV3(object):
         return proposals
 
 
-    def generate_input_params(self):
-        self.end_time = self.start_time + self.horizon
-        self.resources = {f"t{i}": time_segments(self.start_time, self.end_time, 
-                                                 1, 3, use_bounds=True) \
-            for i in range(self.num_telescopes)}
+    # def generate_input_params(self):
+    #     self.end_time = self.start_time + self.horizon
+    #     self.resources = {f"t{i}": time_segments(self.start_time, self.end_time, 
+    #                                              1, 3, use_bounds=True) \
+    #         for i in range(self.num_telescopes)}
 
-        # Split resources into independent networks (defaults to 1 network)
-        all_resources = list(self.resources.keys())
-        self.networks = np.array_split(list(self.resources.keys()), self.num_networks)
+    #     # Split resources into independent networks (defaults to 1 network)
+    #     all_resources = list(self.resources.keys())
+    #     self.networks = np.array_split(list(self.resources.keys()), self.num_networks)
 
-        self.proposals = {}
-        for i in range(self.num_proposals):
-            proposal_name = f"proposal_{i}"
-            tac_priority = random.randint(5, 40)
-            self.proposals[proposal_name] = {"tac_priority": tac_priority}
+    #     self.proposals = {}
+    #     for i in range(self.num_proposals):
+    #         proposal_name = f"proposal_{i}"
+    #         tac_priority = random.randint(5, 40)
+    #         self.proposals[proposal_name] = {"tac_priority": tac_priority}
 
 
     def generate_requests(self, num_requests, injection_time, 
@@ -248,7 +250,7 @@ class RequestGeneratorV3(object):
 
 
     def generate_single_request_injection(self, inj_time, num_requests, 
-                                          min_length=60, max_length=10800, network=0):
+                                        min_length=60, max_length=10800, network=0):
         requests = self.generate_requests(num_requests, inj_time, 
                                           min_length, max_length, network)
         self.injections.append(RequestInjection(inj_time, requests))
