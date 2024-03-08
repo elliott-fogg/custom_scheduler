@@ -78,6 +78,7 @@ def trim_time_segments(segment_list, start_cap, end_cap):
 
 
 def overlap_time_segments(segment_list1, segment_list2):
+    # print(segment_list1, segment_list2)
     overlap_segments = []
     i = 0
     j = 0
@@ -161,7 +162,7 @@ def overlap_time_segments(segment_list1, segment_list2):
 #     return overlap_segments
 
 
-def cut_time_segments(seg1, cut_start, cut_end):
+def cut_time_segments(seg1, cut_start=None, cut_end=None):
     output_segments = []
     for seg in seg1:
         if seg["start"] < cut_start:
@@ -263,3 +264,13 @@ class TelescopeEvent(Injection):
 class RequestEvent(Injection):
     def __init__(self, injection_time, data):
         super().__init__(injection_time, "request", data)
+
+
+class ResourceInjection(Injection):
+    def __init__(self, injection_time, resource_data):
+        super().__init__(injection_time, "resource", resource_data)
+
+
+class RequestInjection(Injection):
+    def __init__(self, injection_time, request_data):
+        super().__init__(injection_time, "request", request_data)

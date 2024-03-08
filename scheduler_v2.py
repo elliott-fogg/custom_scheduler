@@ -1,18 +1,16 @@
-from gurobipy import Model, GRB, tuplelist, quicksum
-from gurobipy import read as gurobi_read_model
-from gurobipy import Env as gpEnv
-import json
+# from gurobipy import Model, GRB, tuplelist, quicksum
+# from gurobipy import read as gurobi_read_model
+# from gurobipy import Env as gpEnv
+from scheduler_utils import PossibleStart, overlap_time_segments, trim_time_segments
 import random
 import math
-import highspy
 import time
-import pulp as pl
 
-from scheduler_utils import PossibleStart, TimeSegment, overlap_time_segments
 
-class Scheduler(object):
-    def __init__(self, now, horizon, slice_size, 
-                 resources, proposals, requests, verbose=1):
+class SchedulerV2(object):
+    def __init__(self, now, horizon, slice_size,
+                 resources, proposals, requests, verbose=1, timelimit=0,
+                 scheduler_type=None):
         self.now = now
         self.horizon = horizon
         self.slice_size = slice_size
@@ -20,11 +18,23 @@ class Scheduler(object):
         self.proposals = proposals
         self.requests = requests
         self.verbose_level = verbose
+        self.timelimit = timelimit
+        self.scheduler_type = scheduler_type
 
+        self.check_scheduler_type()
+
+        self.build_time = None
         self.solve_time = None
+        self.interpret_time = None
+        self.read_write_time = None
         self.objective_value = None
         self.scheduled_yik_index = None
-        
+        self.scheduled_requests = None
+
+    
+    def check_scheduler_type(self):
+        print("check_scheduler_type - SchedulerV2 is just a template.")
+
 
     def log(self, text, log_level):
         if log_level <= self.verbose_level:
@@ -36,8 +46,8 @@ class Scheduler(object):
             fwd = {}
             for resource in r["windows"]:
                 if resource in self.resources:
-                    fwd[resource] = overlap_time_segments(self.resources[resource],
-                                                          r["windows"][resource],
+                    fwd[resource] = trim_time_segments(overlap_time_segments(self.resources[resource],
+                                                          r["windows"][resource]),
                                                           self.now,
                                                           self.horizon)
                 else:
@@ -51,17 +61,18 @@ class Scheduler(object):
         internal_starts = []
         for t in intervals: 
             start = int(math.floor(float(t["start"])/float(slice_size))*slice_size) # Start of the time_slice that this starts in
-            internal_start = t["start"]                                                 # Actual start of this observation window
-            end_time = internal_start + duration                                        # End of this observation window
+            internal_start = t["start"]                                             # Actual start of this observation window
+            end_time = internal_start + duration                                    # End of this observation window
 
             while (t["end"] - start) >= duration:
                 # Generate a range of slices that will be occupied for this start and duration
+                # WARNING - HAVE TO GO BACK THROUGH REQUEST GENERATION AND MAKE SURE THESE ARE ALL INTS
                 tmp = list(range(start, internal_start+duration, slice_size))
                 slices.append(tmp)
                 internal_starts.append(internal_start)
                 start += slice_size                                # Moving on to the next potential start, so move the Start up to the next slice
-                internal_start = start                               # As only the first potential start in a window will be internal, make the 
-                                                                     # next Internal Start an external start
+                internal_start = start                             # As only the first potential start in a window will be internal, make the 
+                                                                   # next Internal Start an external start
         # return slices, internal_starts
         ps_list = []
         idx = 0
@@ -118,6 +129,13 @@ class Scheduler(object):
         self.aikt = aikt
 
 
+    def time_build_model(self):
+        start_build = time.time()
+        self.build_model()
+        end_build = time.time()
+        self.build_time = end_build - start_build
+
+
     def build_model(self):
         print("Scheduler_v2 is just a template. This function should be overwritten.")
         return
@@ -133,27 +151,34 @@ class Scheduler(object):
         return
 
 
+    def time_solve_model(self):
+        start_solve = time.time()
+        self.solve_model()
+        end_solve = time.time()
+        self.solve_time = end_solve - start_solve
+
+
     def solve_model(self):
         print("Scheduler_v2 is just a template. This function should be overwritten.")
         return
 
-        # # self.model.setParam("OutputFlag", False) # Disable output from model?
-        # t1 = time.time()
-        # self.model.optimize()
-        # t2 = time.time()
 
-        # self.gurobi_solve_time = t2 - t1
-
-        # if self.model.Status != GRB.OPTIMAL:
-        #     print(f"Model Status not optimal: {self.model.Status}")
-        #     return
-        # self.solution = self.model.getAttr("X")
-        # self.log("Model optimized", 1)
-        # self.log(f"YiK Size: {len(self.yik)}", 1) # Can't remember why we have this
+    def time_interpret_model(self):
+        start_interpret = time.time()
+        self.interpret_model()
+        self.return_solution()
+        end_interpret = time.time()
+        self.interpret_time = end_interpret - start_interpret
 
 
-    def return_solution(self, display=False):
-        for i in self.sched_yik_index:
+    def interpret_model(self):
+        print("Scheduler_v2 is just a template. This function should be overwritten.")
+        return
+
+
+    def return_solution(self):
+        scheduled = []
+        for i in self.schedule_yik_index:
             entry = self.yik[i]
             # Get relevant parameters
             rid = entry[0]
@@ -181,7 +206,17 @@ class Scheduler(object):
         scheduled_dict = {}
         scheduled_dict["scheduled"] = {str(s["rID"]): s for s in scheduled}
         scheduled_dict["now"] = self.now
+        self.scheduled_requests = scheduled_dict
         return scheduled_dict
+
+
+    def run(self):
+        self.calculate_free_windows()
+        self.build_data_structures()
+        self.time_build_model()
+        self.time_solve_model()
+        self.time_interpret_model()
+        return self.return_solution()
 
 
     def print_solution(self, scheduled):
@@ -203,3 +238,10 @@ class Scheduler(object):
                                         s["priority"])
                   )
         print("---\n")
+
+
+    def get_total_time(self):
+        total_time = self.build_time + self.solve_time + self.interpret_time
+        if self.read_write_time != None:
+            total_time += self.read_write_time
+        return total_time

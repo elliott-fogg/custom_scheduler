@@ -1,18 +1,19 @@
-from scheduler_v2 import Scheduler
+from scheduler_v2 import SchedulerV2
 from ortools.sat.python import cp_model
 from gurobipy import tuplelist
-import json
-import random
-import math
-import time
-from scheduler_utils import PossibleStart, TimeSegment, overlap_time_segments
 
-
-class Scheduler_CPSAT(Scheduler):
+class SchedulerCPSAT(SchedulerV2):
     def __init__(self, now, horizon, slice_size, 
-                 resources, proposals, requests, verbose=1):
-    	super().__init__(now, horizon, slice_size, resources, proposals, 
-    					 requests, verbose)
+                 resources, proposals, requests, verbose=1,
+                 timelimit=0, scheduler_type=None):
+
+        super().__init__(now, horizon, slice_size, resources, proposals,
+            requests, verbose, timelimit, scheduler_type)
+
+
+    def check_scheduler_type(self):
+        if self.scheduler_type != "cpsat":
+            print("ERROR: Mismatched scheduler_type. '{}' should be 'cpsat'.".format(scheduler_type))
 
 
     def build_model(self):
@@ -53,28 +54,28 @@ class Scheduler_CPSAT(Scheduler):
         self.log("Model constructed", 1)
 
 
+    def solve_model(self):
+    	# Solve the model, and time it
+        self.solver = cp_model.CpSolver()
+        status = self.solver.Solve(self.model)
+
+        if status != cp_model.OPTIMAL:
+            print(f"Model Status not optimal: {status}")
+            return
+        self.log("Model optimized", 1)
+
+
+    def interpret_model(self):
+        # Store the Objective value
+        self.objective_value = self.solver.ObjectiveValue()
+
+        # Store which Yik_index variables have been scheduled
+        self.schedule_yik_index = [i for i in range(len(self.scheduled_vars)) if self.solver.Value(self.scheduled_vars[i]) == 1]
+
+
     def write_model(self, filename="test_model.mps"):
-    	print("Write_Model Failed: CP_SAT cannot save models to .MPS format.")
+        print("Write_Model Failed: CP_SAT cannot save models to .MPS format.")
 
 
     def load_model(self, filename="test_model.mps"):
-    	print("Load_Model Failed: CP_SAT cannot load .MPS models.")
-
-
-    def solve_model(self):
-    	# Solve the model, and time it
-    	solver = cp_model.CpSolver()
-    	start_time = time.time()
-    	status = solver.Solve(self.model)
-    	end_time = time.time()
-    	self.solve_time = end_time - start_time
-
-    	if status != cp_model.OPTIMAL:
-    		print(f"Model Status not optimal: {status}")
-    		return
-
-    	# Store the Objective value
-    	self.objective_value = solver.ObjectiveValue()
-
-    	# Store which Yik_index variables have been scheduled
-    	self.schedule_yik_index = [i for i in range(len(self.scheduled_vars)) if solver.Value(self.scheduled_vars[i]) == 1]
+        print("Load_Model Failed: CP_SAT cannot load .MPS models.")

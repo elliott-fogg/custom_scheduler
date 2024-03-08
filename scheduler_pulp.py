@@ -1,17 +1,19 @@
-from scheduler_v2 import Scheduler
+from scheduler_v2 import SchedulerV2
 import pulp as pl
 from gurobipy import tuplelist
-import json
-import random
-import math
-import time
-from scheduler_utils import PossibleStart, TimeSegment, overlap_time_segments
 
-class Scheduler_Pulp(object):
+class SchedulerPulp(SchedulerV2):
     def __init__(self, now, horizon, slice_size, 
-                 resources, proposals, requests, verbose=1):
+                 resources, proposals, requests, verbose=1,
+                 timelimit=0, scheduler_type=None):
+
         super().__init__(now, horizon, slice_size, resources, proposals,
-                         requests, verbose)
+                         requests, verbose, timelimit, scheduler_type)
+
+
+    def check_scheduler_type(self):
+        if self.scheduler_type not in ("cbc", "scip", "gurobi_pulp", "gurobi_pulp_cmd"):
+            print("ERROR: Mismatched scheduler_type: '{}'. Currently using PuLP Scheduler.".format(scheduler_type))
 
 
     def build_model(self):
@@ -26,7 +28,7 @@ class Scheduler_Pulp(object):
         # Construct the isScheduled binary variables for every possible start for every request, in the Yik
         for yik_id in range(len(yik)):
             r = yik[yik_id]
-            var = pl.LpVariable(name=str(yik_id), cat="Binary")
+            var = pl.LpVariable(name="BIN_"+str(yik_id), cat="Binary")
             scheduled_vars.append(var)
             requestLocations.append((str(r[0]), r[1], r[2], r[3], var)) # resID, start_w_idx, priority, resource, isScheduled?
 
@@ -50,6 +52,7 @@ class Scheduler_Pulp(object):
 
         m.setObjective(objective)
 
+        self.scheduled_vars = scheduled_vars
 
         self.model = m
         self.log("Model constructed", 1)
@@ -64,21 +67,35 @@ class Scheduler_Pulp(object):
         var_names, self.model = pl.LpProblem.fromMPS(filename, pl.LpMaximize)
 
 
-    def solve_model(self):
-        # self.model.setParam("OutputFlag", False) # Disable output from model?
-        start_time = time.time()
-        status = self.model.solve()
-        end_time = time.time()
-		self.solve_time = end_time - start_time
+    def getSolver(self):
+        solvers_dict = {
+            "cbc": "PULP_CBC_CMD",
+            "scip": "SCIP_CMD",
+            "highs": "HiGHS_CMD",
+            "gurobi_pulp": "GUROBI",
+            "gurobi_pulp_cmd": "GUROBI_CMD"
+        }
+        solver_name = solvers_dict[self.scheduler_type]
+        if self.timelimit > 0:
+            solver = pl.getSolver(solver_name, timeLimit=10)
+        else:
+            # No time limit
+            solver = pl.getSolver(solver_name)
+        return solver
 
+
+    def solve_model(self):
+        solver = self.getSolver()
+        status = self.model.solve(solver)
         if status != 1:
             print(f"Model Status not optimal: {status}")
             return
-        self.log("Model optimized", 1)
 
-        # Store the Objective value
+
+    def interpret_model(self):
         self.objective_value = self.model.objective.value()
 
-        # Store which Yik_index variables have been scheduled
-        variables = self.model.variables()
-        self.schedule_yik_index = [i for i in range(len(variables)) if variables[i].value() == 1]
+        self.schedule_yik_index = []
+        for i in range(len(self.yik)):
+            if self.scheduled_vars[i].value() == 1:
+                self.schedule_yik_index.append(i)
