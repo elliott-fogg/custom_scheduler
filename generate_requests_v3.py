@@ -1,6 +1,6 @@
 import random, json, math, os
 import numpy as np
-from scheduler_utils import overlap_time_segments, trim_time_segments
+from scheduler_utils import ResourceInjection, RequestInjection, overlap_time_segments, trim_time_segments
 import math
 
 SECONDS_IN_DAY = 24 * 60 * 60
@@ -45,76 +45,13 @@ estimated_telescope_times = {
 
 telescopes_2m = ["COJ", "OGG"]
 
-
-class Injection(object):
-    def __init__(self, injection_time, injection_type, data=None):
-        self.injection_time = injection_time
-        self.injection_type = injection_type
-        self.data = data
-
-    def __str__(self):
-        return f"{self.injection_type}_{self.injection_time}"
-    
-    def __lt__(self, other):
-        if self.injection_time == other.injection_time:
-            return self.type_lt(other)
-        else:
-            return self.injection_time < other.injection_time
-
-    def __gt__(self, other):
-        if self.injection_time == other.injection_time:
-            return self.type_gt(other)
-        else:
-            return self.injection_time > other.injection_time
-
-    def __eq__(self, other):
-        if self.injection_time == other.injection_time:
-            return self.type_eq(other)
-        else:
-            return False
-
-    def type_lt(self, other):
-        if self.injection_type == "request": # Either Request vs Request, or Request vs Resource
-            return False
-        elif other.injection_type == "resource": # Either Resource vs Resource, or Request vs Resource
-            return False
-        else:
-            return True # Must be Resource vs Request
-
-    def type_gt(self, other):
-        if self.injection_type == "resource":
-            return False
-        elif other.injection_type == "request":
-            return False
-        else: return True
-
-    def type_eq(self, other):
-        return self.injection_type == other.injection_type
-
-
-    def to_json(self):
-        return {
-            "injection_time": self.injection_time,
-            "injection_type": self.injection_type,
-            "injection_data": self.data
-        }
-
-
-class ResourceInjection(Injection):
-    def __init__(self, injection_time, resource_data):
-        super().__init__(injection_time, "resource", resource_data)
-
-
-class RequestInjection(Injection):
-    def __init__(self, injection_time, request_data):
-        super().__init__(injection_time, "request", request_data)
-
-
 class RequestGeneratorV3(object):
-    def __init__(self, now=0, horizon_days=default_horizon_days,
+    def __init__(self, seed, now=0, horizon_days=default_horizon_days,
                  num_telescopes=1, num_networks=1, use_2m_telescopes=False,
                  num_proposals=5, proposals_dict=None,
                  slice_size=default_slice_size):
+
+        random.seed(seed)
 
         # Store necessary parameters
         self.now = now # The start time of the scheduler, in seconds

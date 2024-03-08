@@ -21,33 +21,6 @@ class PossibleStart(object):
                                                        self.slice_size)
 
 
-# class TimeSegment(object):
-#     def __init__(self, start, end):
-#         if start < end:
-#             self.start = start
-#             self.end = end
-#         else:
-#             raise Exception()
-
-#     def __gt__(self, other):
-#         if self.start == other.start:
-#             return self.end > other.end
-#         else:
-#             return self.start > other.start
-
-#     def __lt__(self, other):
-#         if self.start == other.start:
-#             return self.end < other.end
-#         else:
-#             return self.start < other.start
-
-#     def __eq__(self, other):
-#         return (self.start == other.start) and (self.end == other.end)
-
-#     def __repr__(self):
-#         return f"TimeSegment({self.start}, {self.end})"
-
-
 def trim_time_segments(segment_list, start_cap, end_cap):
     trimmed_segment_list = []
 
@@ -117,49 +90,6 @@ def overlap_time_segments(segment_list1, segment_list2):
             overlap_segments.append({"start": window_start, "end": window_end})
             
     return overlap_segments
-
-
-
-
-# def overlap_time_segments(seg1, seg2, now, horizon):
-#     overlap_segments = []
-#     i = 0
-#     j = 0
-
-#     seg1.sort(key=lambda x: x["start"])
-#     seg2.sort(key=lambda x: x["start"])
-
-#     while ((i < len(seg1)) and (j < len(seg2))):
-#         s1 = seg1[i]
-#         s2 = seg2[j]
-
-#         if s1["end"] < s2["start"]: # Current s1 is behind Current s2, move to next s1
-#             i += 1
-#             continue
-
-#         if s2["end"] < s1["start"]: # Current s2 is behind Current s1, move to next s2
-#             j += 1
-#             continue
-
-#         window_start = max([s1["start"], s2["start"], now])
-        
-#         if s1["end"] < s2["end"]: # s1 ends first, move to next s1
-#             window_end = s1["end"]
-#             i += 1
-            
-#         elif s1["end"] > s2["end"]: # s2 ends first, move to next s2
-#             window_end= min(max([s2["end"], now]), horizon)
-#             j += 1
-
-#         else: # Both segments end at the same time, move to next of both
-#             window_end = min(max([s1["end"], now]), horizon)
-#             i += 1
-#             j+= 1
-
-#         if window_start != window_end:
-#             overlap_segments.append({"start": window_start, "end": window_end})
-            
-#     return overlap_segments
 
 
 def cut_time_segments(seg1, cut_start=None, cut_end=None):
@@ -259,11 +189,6 @@ class TelescopeEvent(Injection):
     def __init__(self, injection_time, resource, closed):
         data = {"resource": resource, "closed": closed}
         super().__init__(injection_time, "resource", data)
-
-
-class RequestEvent(Injection):
-    def __init__(self, injection_time, data):
-        super().__init__(injection_time, "request", data)
 
 
 class ResourceInjection(Injection):

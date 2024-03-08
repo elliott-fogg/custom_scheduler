@@ -5,7 +5,7 @@ from scheduler_highs import SchedulerHighs
 from scheduler_pulp import SchedulerPulp
 import json
 import os
-from scheduler_utils import Injection, TelescopeEvent, RequestEvent, cut_time_segments, trim_time_segments
+from scheduler_utils import TelescopeEvent, RequestInjection, cut_time_segments, trim_time_segments
 
 class SchedulerSimulation(object):
     def __init__(self, filepath=None, data=None, timelimit=0,
@@ -88,7 +88,7 @@ class SchedulerSimulation(object):
                 for reqID in inj["injection_data"]:
                     self.all_requests[reqID] = inj["injection_data"][reqID]
                     new_requests.append(reqID)
-                self.events.append(RequestEvent(inj["injection_time"], new_requests))
+                self.events.append(RequestInjection(inj["injection_time"], new_requests))
 
             elif inj["injection_type"] == "resource":
                 data = inj["injection_data"]
@@ -117,54 +117,6 @@ class SchedulerSimulation(object):
             "requests": { r: v for r, v in self.all_requests.items() if r in self.current_requests},
             "timelimit": self.timelimit
         }
-
-
-    # def run_scheduler(self, requests, resources):
-    #     sched = self.Scheduler(self.now, self.horizon, self.slice_size,
-    #                       resources, self.proposals, requests, 
-    #                       verbose=0, timelimit=self.timelimit, scheduler_type=self.scheduler_type)
-    #     scheduled = sched.run()
-
-    #     # sched.calculate_free_windows()
-    #     # sched.build_data_structures()
-    #     # sched.time_build_model()
-    #     # sched.time_solve_model()
-    #     self.last_sched = sched
-    #     # scheduled = sched.return_solution(False)
-    #     self.scheduler_results.append(scheduled)
-
-
-    # def run_simulation(self):
-    #     i = 0 # The index of the current event
-
-    #     while i < len(self.events):
-    #         # Process next event, and any events that happen simultaneously
-    #         current_time = self.events[i].time
-
-    #         while True:
-    #             self.process_event(self.events[i])
-
-    #             if i+1 >= len(self.events):
-    #                 break
-
-    #             # If next event is simultaneous, process it too
-    #             if self.events[i+1].time == current_time:
-    #                 i += 1
-    #             else:
-    #                 break
-
-    #         # Run Scheduler
-    #         requests, resources = self.prepare_scheduler()
-    #         self.run_scheduler(requests, resources)
-
-    #         # Move to the next event
-    #         i += 1
-
-    #     self.prepare_scheduler(final=True)
-    #     # self.display_simulation_results()
-
-
-#####
 
 
     def get_next_events(self):
@@ -214,12 +166,6 @@ class SchedulerSimulation(object):
             else:
                 if resource in self.base_resources:
                     self.current_resources.add(resource)
-
-
-    # def prepare_scheduler(self):
-    #     # Bank Completed Observations
-    #     # Modify time for currently occupied telescopes
-    #     # Reset interrupted observations
 
 
     def check_occupied_requests(self):
@@ -275,82 +221,6 @@ class SchedulerSimulation(object):
         return (requests, resources)
 
 
-
-
-
-
-
-
-    # def prepare_scheduler(self, final=False):
-    #     # Check if any requests have been successful
-    #     # Check if any requests are in the middle of being completed
-    #         # Check if those requests have been cancelled
-    #         # Check if they impact available resource time
-
-    #     if final:
-    #         self.now = self.horizon
-
-    #     occupied_requests = []
-    #     occupied_resources = {}
-
-    #     if len(self.scheduler_results) == 0:
-    #         # We're in the first run, don't need to account for past requests
-    #         pass
-
-    #     else:
-    #         for rid, r in self.scheduler_results[-1]["scheduled"].items():
-    #             if r["start"] > self.now:
-    #                 # Request hasn't been executed yet, still changeable
-    #                 continue
-
-    #             elif r["end"] <= self.now:
-    #                 # Request has been executed. Save the information.
-    #                 self.completed_requests[rid] = r
-
-    #             else:
-    #                 # Request is currently being executed. Check if it has been 
-    #                 # interrupted.
-    #                 if r["resource"] in self.current_resources:
-    #                     # Request is currently being executed. Remove from 
-    #                     # schedulable requests (assume it is fixed), and remove
-    #                     # the required time from the relevant resource.
-    #                     occupied_requests.append(rid)
-    #                     occupied_resources[r["resource"]] = r["end"]
-    #                     # print(f"Occupied Request: {rid}")
-
-    #                 else:
-    #                     # Request has been interrupted. Reissue it as if it was
-    #                     # never scheduled.
-    #                     # print(f"Interrupted Request: {rid}")
-    #                     pass
-
-    #     # Filter requests
-    #     requests = {}
-    #     for reqID in self.current_requests:
-    #         if reqID not in self.completed_requests:
-    #             if reqID not in occupied_requests:
-    #                 requests[reqID] = self.all_requests[reqID]
-
-    #     # Filter resources
-    #     resources = {}
-    #     for res in self.current_resources:
-    #         resource_times = self.base_resources[res]
-    #         if res in occupied_resources:
-    #             resource_times = cut_time_segments(resource_times, 
-    #                                                self.now, 
-    #                                                occupied_resources[res])
-    #         resources[res] = resource_times
-
-    #     # print("Scheduling Run Information:")
-    #     # print(f"Now: {self.now}")
-    #     # print(f"Current Requests: {self.current_requests}")
-    #     # print(f"Completed Requests: {list(self.completed_requests.keys())}")
-    #     # print(f"Schedulable Requests: {list(requests.keys())}")
-    #     # print(f"Current Resources: {list(self.current_resources)}")
-
-    #     return requests, resources
-
-
     def run_scheduler(self):
         # Complete a scheduling run with the current information
         scheduler = self.Scheduler(self.now, self.horizon, self.slice_size,
@@ -376,44 +246,6 @@ class SchedulerSimulation(object):
         # After all events are processed (no changes to network)
         self.now = self.scheduling_horizon
         self.check_occupied_requests()
-
-
-
-
-
-
-
-
-
-    # def run_simulation(self):
-    #     i = 0 # The index of the current event
-
-    #     while i < len(self.events):
-    #         # Process next event, and any events that happen simultaneously
-    #         current_time = self.events[i].time
-
-    #         while True:
-    #             self.process_event(self.events[i])
-
-    #             if i+1 >= len(self.events):
-    #                 break
-
-    #             # If next event is simultaneous, process it too
-    #             if self.events[i+1].time == current_time:
-    #                 i += 1
-    #             else:
-    #                 break
-
-    #         # Run Scheduler
-    #         requests, resources = self.prepare_scheduler()
-    #         self.run_scheduler(requests, resources)
-
-    #         # Move to the next event
-    #         i += 1
-
-    #     self.prepare_scheduler(final=True)
-    #     # self.display_simulation_results()
-
 
 
     def display_simulation_results(self):
