@@ -9,11 +9,11 @@ import time
 import pulp as pl
 from ortools.sat.python import cp_model
 
-from scheduler_utils import PossibleStart, TimeSegment, overlap_time_segments
+from scheduler_utils import PossibleStart, overlap_time_segments, trim_time_segments #TimeSegment,
 
 class SchedulerV4(object):
     def __init__(self, now, horizon, slice_size, 
-                 resources, proposals, requests, verbose=1):
+                 resources, proposals, requests, verbose=1, timelimit=0):
         self.now = now
         self.horizon = horizon
         self.slice_size = slice_size
@@ -21,6 +21,7 @@ class SchedulerV4(object):
         self.proposals = proposals
         self.requests = requests
         self.verbose_level = verbose
+        self.timelimit = timelimit
 
         self.env = gpEnv(empty=True)
         self.env.setParam("OutputFlag", 0)
@@ -45,8 +46,8 @@ class SchedulerV4(object):
             fwd = {}
             for resource in r["windows"]:
                 if resource in self.resources:
-                    fwd[resource] = overlap_time_segments(self.resources[resource],
-                                                          r["windows"][resource],
+                    fwd[resource] = trim_time_segments(overlap_time_segments(self.resources[resource],
+                                                          r["windows"][resource]),
                                                           self.now,
                                                           self.horizon)
                 else:
@@ -55,6 +56,14 @@ class SchedulerV4(object):
 
 
     def get_slices(self, intervals, resource, duration):
+        # with open("tempfile.txt", "w") as f:
+        #     f.write("HERE\n")
+        #     f.write("{}\n".format(intervals))
+        #     f.write("{}\n".format(type(intervals)))
+        #     f.write("{}\n".format(duration))
+        #     f.write("{}\n".format(type(duration)))
+        #     f.write("{}\n".format(resource))
+        #     f.write("{}\n".format(type(resource)))
         slice_size = self.slice_size
         slices = []
         internal_starts = []
@@ -64,8 +73,10 @@ class SchedulerV4(object):
             end_time = internal_start + duration                                        # End of this observation window
 
             while (t["end"] - start) >= duration:
+                # print(start, internal_start, duration, slice_size)
                 # Generate a range of slices that will be occupied for this start and duration
-                tmp = list(range(start, internal_start+duration, slice_size))
+
+                tmp = list(range(int(start), int(internal_start+duration), slice_size))
                 slices.append(tmp)
                 internal_starts.append(internal_start)
                 start += slice_size                                # Moving on to the next potential start, so move the Start up to the next slice
@@ -162,12 +173,12 @@ class SchedulerV4(object):
         # objective = quicksum([isScheduled * (priority + 0.1/(winidx+1.0)) for req, winidx, priority, resource, isScheduled in requestLocations])
 
         # Set the tolerance of the solution
-        # m.params.MIPGap = 0.01
+        # model.params.MIPGap = 0.01
 
         # Set the Method of solving the root relaxation of the MIPs model to concurrent
-        # m.params.Method = 3
+        # model.params.Method = 3
 
-        # m.update()
+        # model.update()
 
         self.scheduled_vars = scheduled_vars
         self.model = model
@@ -198,7 +209,7 @@ class SchedulerV4(object):
         # self.solution = self.model.getAttr("X")
         self.log("Model optimized", 1)
         self.log(f"YiK Size: {len(self.yik)}", 1) # Can't remember why we have this
-        print(self.solver.ObjectiveValue())
+        # print(self.solver.ObjectiveValue())
         # for i in range(len(self.yik)):
         # 	if solver.Value(str(i)) == 1:
         # 		print(i)
