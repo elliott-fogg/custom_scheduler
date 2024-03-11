@@ -14,7 +14,7 @@ import pandas as pd
 
 
 class AltPerformanceTest(object):
-    def __init__(self, input_folder, output_folder, file_identifier):
+    def __init__(self, input_folder, output_folder, file_identifier, scheduler_type="gurobi"):
         self.input_folder = input_folder
         self.output_dir = os.path.join(output_folder, file_identifier)
         os.makedirs(self.output_dir, exist_ok=True)
@@ -34,17 +34,22 @@ class AltPerformanceTest(object):
         return file_list
 
 
+    def generate_output_filename(self, input_filename):
+        return input_filename
+
+
     def check_input_files(self, input_file_list):
         completed_files = os.listdir(self.output_dir)
+
         input_files = []
         for f in input_file_list:
-            if f in completed_files:
-                print("File completed:", f)
+            output_filename = self.generate_output_filename(f)
+            if output_filename in completed_files:
+                print("File completed:", output_filename)
             else:
                 input_files.append(f)
         print(len(input_files), " files remaining.")
         return input_files
-
 
     # def test_loop(self, input_file):
     #     input_filepath = os.path.join(self.input_folder, input_file)
@@ -65,7 +70,9 @@ class AltPerformanceTest(object):
         output = {
             "build": sim.last_sched.build_time,
             "solve": sim.last_sched.solve_time,
-            "interpret": sim.last_sched.interpret_time
+            "interpret": sim.last_sched.interpret_time,
+            "total_time": sim.last_sched.get_total_time(),
+            "scheduler_type": self.scheduler_type
         }
         return json.dumps(output)
 
@@ -79,6 +86,7 @@ class AltPerformanceTest(object):
             # self.save_results()
             # with open(output_filepath, "w") as f:
             #     f.write("{}".format(output))
+        print("\nTest Complete.")
 
 
     def save_results(self, output_data, filename):            
@@ -94,22 +102,32 @@ class AltPerformanceTest(object):
                                          dt.datetime.now().strftime("%H:%M:%S %d-%m-%Y")))
         
 
-def SolverComparisonTest(AltPerformanceTest):
-    def __init__(self, input_folder, output_folder, file_identifier,
-        scheduler_type):
-        super().__init__(input_folder, output_folder, file_identifier)
-        self.scheduler_type = scheduler_type
+class SolverComparisonTest(AltPerformanceTest):
+    def __init__(self, input_folder, output_folder, 
+                 file_identifier, scheduler_type):
+        super().__init__(input_folder, output_folder, file_identifier, scheduler_type)
+
+
+    def generate_output_filename(self, input_filename):
+        filename_split = input_filename.split(".")
+        filename_split[0] += "_{}".format(self.scheduler_type)
+        new_filename = ".".join(filename_split)
+        return new_filename
 
     def save_results(self, output_data, filename):
         # Append Scheduler Type to filename
-        filename_split = filename.split(".")
-        filename_split[0] += "_{}".format(scheduler_type)
-        new_filename = ".".join(filename_split)
-        print(new_filename)
-        output_filepath = os.path.join(self.output_dir, new_filename)
+        output_filepath = os.path.join(self.output_dir, 
+                                       self.generate_output_filename(filename))
+
+        # filename_split = filename.split(".")
+        # filename_split[0] += "_{}".format(self.scheduler_type)
+        # new_filename = ".".join(filename_split)
+        # print(new_filename)
+        # output_filepath = os.path.join(self.output_dir, new_filename)
         
         with open(output_filepath, "w") as f:
             f.write("{}".format(output_data))
+
 
 class AltPerformanceTestParser(object):
     def __init__(self, output_folder, file_identifier):

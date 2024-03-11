@@ -237,23 +237,27 @@ class RequestGeneratorV3(object):
 
     def save_to_file(self, filename=None, dirname="sample_input"):
         if filename == None:
-            file_prefix = "sample_input_v3_"
-            file_index = 0
-            while True:
-                filename = f"{file_prefix}{file_index}.json"
-                temp_path = f"{dirname}/{filename}.json"
-                if os.path.isfile(temp_path):
-                    file_index += 1
-                else:
-                    break
+            filename = self.index_filename()
 
         output = self.output_to_json()
-
-        filepath = os.path.join(dirname, filename)
+        filepath = os.path.join("data", dirname, filename)
 
         with open(filepath, "w") as f:
             json.dump(output, f, indent=4)
         print(f"Saved to file at '{filepath}'")
+
+
+    def index_filename(self):
+        file_previx = "sample_input_v3_"
+        file_index = 0
+        while True:
+            filename = f"{file_prefix}{file_index}.json"
+            filepath = os.path.join("data", dirname, filename)
+            if os.path.isfile(filepath):
+                file_index += 1
+            else:
+                break
+        return filename
 
 
     def auto_run(self, request_injection_dict, num_telescope_closures):
