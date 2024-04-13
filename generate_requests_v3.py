@@ -235,24 +235,28 @@ class RequestGeneratorV3(object):
         return output
 
 
-    def save_to_file(self, filename=None, dirname="sample_input"):
+    def save_to_file(self, data_dir, output_dir, filename=None):
+        output_folder = os.path.join(data_dir, output_dir)
+
+        os.makedirs(output_folder, exist_ok=True)
+
         if filename == None:
-            filename = self.index_filename()
+            filename = self.index_filename(output_folder)
 
         output = self.output_to_json()
-        filepath = os.path.join("data", dirname, filename)
+        filepath = os.path.join(output_folder, filename)
 
         with open(filepath, "w") as f:
             json.dump(output, f, indent=4)
         print(f"Saved to file at '{filepath}'")
 
 
-    def index_filename(self):
-        file_previx = "sample_input_v3_"
+    def index_filename(self, output_folder):
+        file_prefix = "sample_input_v3_"
         file_index = 0
         while True:
             filename = f"{file_prefix}{file_index}.json"
-            filepath = os.path.join("data", dirname, filename)
+            filepath = os.path.join(output_folder, filename)
             if os.path.isfile(filepath):
                 file_index += 1
             else:
