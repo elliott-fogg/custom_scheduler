@@ -7,9 +7,12 @@ import json
 import os
 from scheduler_utils import TelescopeEvent, RequestInjection, cut_time_segments, trim_time_segments
 
+# TO FIX: modify the functions in scheduler_utils.py so that they do not require both a start and end
+# point to cut time segments from only 1 direction (e.g. clipping them to 'now').
+
 class SchedulerSimulation(object):
     def __init__(self, filepath=None, data=None, timelimit=0,
-                 scheduler_type="gurobi", simulation_horizon_days=3):
+                 scheduler_type=None, simulation_horizon_days=7):
         if filepath != None:
             self.load_file(filepath)
         elif data != None:
@@ -172,6 +175,11 @@ class SchedulerSimulation(object):
         occupied_requests = []
         occupied_resources = {}
 
+        if len(self.scheduler_results) == 0:
+            requests = {r: v for r, v in self.all_requests.items() if r in self.current_requests}
+            resources = {t: v for t, v in self.base_resources.items() if t in self.current_resources}
+            return (requests, resources)
+
         for rid, r in self.scheduler_results[-1]["scheduled"].items():
             if r["start"] > self.now:
                 # Scheduled request hasn't been executed yet, still changeable
@@ -215,20 +223,21 @@ class SchedulerSimulation(object):
             resource_times = self.base_resources[res]
             if res in occupied_resources:
                 resource_times = cut_time_segments(resource_times,
-                                                   cut_start=occupied_resources[res])
+                                                   cut_start=occupied_resources[res],
+                                                   cut_end=self.now + self.simulation_horizon)
             resources[res] = resource_times
 
         return (requests, resources)
 
 
-    def run_scheduler(self):
+    def run_scheduler(self, requests, resources):
         # Complete a scheduling run with the current information
         scheduler = self.Scheduler(self.now, self.horizon, self.slice_size,
                                    resources, self.proposals, requests,
                                    verbose=0, timelimit=self.timelimit,
                                    scheduler_type=self.scheduler_type)
         currently_scheduled = scheduler.run()
-        self.last_scheduler = scheduler
+        self.last_sched = scheduler
         self.scheduler_results.append(currently_scheduled)
 
 
@@ -237,14 +246,16 @@ class SchedulerSimulation(object):
             next_events = self.get_next_events()
             self.process_event_group(next_events)
 
-            if len(self.scheduler_results) > 0:
-                # Scheduler has already been run at least once
-                self.check_occupied_requests()
+            requests, resources = self.check_occupied_requests()
 
-            self.run_scheduler()
+            # if len(self.scheduler_results) > 0:
+            #     # Scheduler has already been run at least once
+            #     self.check_occupied_requests()
+
+            self.run_scheduler(requests, resources)
 
         # After all events are processed (no changes to network)
-        self.now = self.scheduling_horizon
+        self.now = self.simulation_horizon
         self.check_occupied_requests()
 
 
