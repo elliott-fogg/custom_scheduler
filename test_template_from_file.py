@@ -14,6 +14,103 @@ import pandas as pd
 
 
 class AltPerformanceTest(object):
+    def __init__(self, input_folder, output_folder, file_identifier, scheduler_type="gurobi", timelimit=0):
+        self.input_folder = input_folder
+        self.output_dir = os.path.join(output_folder, file_identifier)
+        os.makedirs(self.output_dir, exist_ok=True)
+        self.timelimit = timelimit
+
+        self.scheduler_type = scheduler_type
+
+        all_input_files = self.gather_input_files(file_identifier)
+        self.input_files = self.check_input_files(all_input_files)
+
+        self.total_iterations = len(self.input_files)
+        self.count = 0
+
+
+    def gather_input_files(self, file_identifier):
+        all_file_list = os.listdir(self.input_folder)
+        file_list = [f for f in all_file_list if file_identifier in f]
+        return file_list
+
+
+    def generate_output_filename(self, input_filename):
+        return input_filename
+
+
+    def check_input_files(self, input_file_list):
+        completed_files = os.listdir(self.output_dir)
+
+        input_files = []
+        for f in input_file_list:
+            output_filename = self.generate_output_filename(f)
+            if output_filename in completed_files:
+                print("File completed:", output_filename)
+            else:
+                input_files.append(f)
+        print(len(input_files), " files remaining.")
+        return input_files
+
+
+    def test_loop(self, input_file):
+        input_filepath = os.path.join(self.input_folder, input_file)
+        input_data = json.load(open(input_filepath, "r"))
+        sim = SchedulerSimulation(data=input_data, scheduler_type=self.scheduler_type, timelimit=self.timelimit)
+
+        next_events = sim.get_next_events()
+        sim.process_event_group(next_events)
+        scheduler_data = sim.get_scheduler_info()
+        scheduler = sim.Scheduler(now=scheduler_data["now"], 
+                    horizon=scheduler_data["horizon"],
+                    slice_size=scheduler_data["slice_size"],
+                    resources=scheduler_data["resources"],
+                    proposals=scheduler_data["proposals"],
+                    requests=scheduler_data["requests"],
+                    timelimit=self.timelimit,
+                    scheduler_type=self.scheduler_type
+        )
+
+        scheduler.run()
+
+        output = {
+            "build": scheduler.build_time,
+            "solve": scheduler.solve_time,
+            "interpret": scheduler.interpret_time,
+            "total_time": scheduler.get_total_time(),
+            "scheduler_type": self.scheduler_type,
+            "input_file": input_file,
+            "input_folder": self.input_folder
+        }
+        return json.dumps(output)
+
+
+    def run(self):
+        for filename in self.input_files:
+            self.write(filename)
+            output = self.test_loop(filename)
+            self.save_results(output, filename)
+            # output_filepath = os.path.join(self.output_dir, filename)
+            # self.save_results()
+            # with open(output_filepath, "w") as f:
+            #     f.write("{}".format(output))
+        print("\nTest Complete.")
+
+
+    def save_results(self, output_data, filename):            
+        output_filepath = os.path.join(self.output_dir, filename)
+
+        with open(output_filepath, "w") as f:
+            f.write("{}".format(output_data))
+
+
+    def write(self, filename):
+        self.count += 1
+        print("{} / {} - {} - {}".format(self.count, self.total_iterations, filename, 
+                                         dt.datetime.now().strftime("%H:%M:%S %d-%m-%Y")))
+
+
+class SchedulerPerformanceTest(object):
     def __init__(self, input_folder, output_folder, file_identifier, scheduler_type="gurobi"):
         self.input_folder = input_folder
         self.output_dir = os.path.join(output_folder, file_identifier)
@@ -50,16 +147,6 @@ class AltPerformanceTest(object):
                 input_files.append(f)
         print(len(input_files), " files remaining.")
         return input_files
-
-    # def test_loop(self, input_file):
-    #     input_filepath = os.path.join(self.input_folder, input_file)
-    #     input_data = json.load(open(input_filepath, "r"))
-    #     sim = SchedulerSimulation(data=input_data)
-    #     t1 = time.time()
-    #     sim.run_simulation()
-    #     t2 = time.time()
-    #     runtime = t2 - t1
-    #     return runtime
 
 
     def test_loop(self, input_file):
@@ -104,8 +191,8 @@ class AltPerformanceTest(object):
 
 class SolverComparisonTest(AltPerformanceTest):
     def __init__(self, input_folder, output_folder, 
-                 file_identifier, scheduler_type):
-        super().__init__(input_folder, output_folder, file_identifier, scheduler_type)
+                 file_identifier, scheduler_type, timelimit=0):
+        super().__init__(input_folder, output_folder, file_identifier, scheduler_type, timelimit)
 
 
     def generate_output_filename(self, input_filename):
@@ -118,6 +205,7 @@ class SolverComparisonTest(AltPerformanceTest):
         # Append Scheduler Type to filename
         output_filepath = os.path.join(self.output_dir, 
                                        self.generate_output_filename(filename))
+
 
         # filename_split = filename.split(".")
         # filename_split[0] += "_{}".format(self.scheduler_type)
