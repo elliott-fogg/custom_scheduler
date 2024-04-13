@@ -113,6 +113,9 @@ def cut_time_segments(seg1, cut_start=None, cut_end=None):
                                                  "end": seg["end"]})
 
         else:
+            if cut_end == None:
+                continue
+
             # Segment starts after the cut starts
             if seg["start"] > cut_end:
                 # Segment starts after the cut ends, so it's unaffected
