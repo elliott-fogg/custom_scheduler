@@ -70,7 +70,7 @@ class SchedulerGurobi(SchedulerV2):
 
         # If specified, set a time limit
         if self.timelimit > 0:
-            model.setParam('TimeLimit', timelimit)
+            m.setParam('TimeLimit', timelimit)
 
         m.update()
 

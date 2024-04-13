@@ -13,7 +13,7 @@ class SchedulerCPSAT(SchedulerV2):
 
     def check_scheduler_type(self):
         if self.scheduler_type != "cpsat":
-            print("ERROR: Mismatched scheduler_type. '{}' should be 'cpsat'.".format(scheduler_type))
+            print("ERROR: Mismatched scheduler_type. '{}' should be 'cpsat'.".format(self.scheduler_type))
 
 
     def build_model(self):
@@ -57,10 +57,14 @@ class SchedulerCPSAT(SchedulerV2):
     def solve_model(self):
     	# Solve the model, and time it
         self.solver = cp_model.CpSolver()
-        status = self.solver.Solve(self.model)
 
-        if status != cp_model.OPTIMAL:
-            print(f"Model Status not optimal: {status}")
+        if self.timelimit > 0:
+            self.solver.parameters.max_time_in_seconds = self.timelimit
+
+        self.scheduler_status = self.solver.Solve(self.model)
+
+        if self.scheduler_status != cp_model.OPTIMAL:
+            print(f"Model Status not optimal: {self.scheduler_status}")
             return
         self.log("Model optimized", 1)
 
@@ -68,6 +72,7 @@ class SchedulerCPSAT(SchedulerV2):
     def interpret_model(self):
         # Store the Objective value
         self.objective_value = self.solver.ObjectiveValue()
+        print(self.objective_value)
 
         # Store which Yik_index variables have been scheduled
         self.schedule_yik_index = [i for i in range(len(self.scheduled_vars)) if self.solver.Value(self.scheduled_vars[i]) == 1]

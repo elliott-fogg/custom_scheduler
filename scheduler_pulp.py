@@ -4,7 +4,7 @@ from gurobipy import tuplelist
 
 class SchedulerPulp(SchedulerV2):
     def __init__(self, now, horizon, slice_size, 
-                 resources, proposals, requests, verbose=1,
+                 resources, proposals, requests, verbose=0,
                  timelimit=0, scheduler_type=None):
 
         super().__init__(now, horizon, slice_size, resources, proposals,
@@ -77,7 +77,7 @@ class SchedulerPulp(SchedulerV2):
         }
         solver_name = solvers_dict[self.scheduler_type]
         if self.timelimit > 0:
-            solver = pl.getSolver(solver_name, timeLimit=10)
+            solver = pl.getSolver(solver_name, timeLimit=self.timelimit)
         else:
             # No time limit
             solver = pl.getSolver(solver_name)
@@ -86,9 +86,9 @@ class SchedulerPulp(SchedulerV2):
 
     def solve_model(self):
         solver = self.getSolver()
-        status = self.model.solve(solver)
-        if status != 1:
-            print(f"Model Status not optimal: {status}")
+        self.scheduler_status = self.model.solve(solver)
+        if self.scheduler_status != 1:
+            print(f"Model Status not optimal: {self.scheduler_status}")
             return
 
 

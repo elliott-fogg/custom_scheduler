@@ -31,7 +31,9 @@ class SchedulerHighs(SchedulerGurobi):
 
 
     def solve_model(self):
-    	self.h.run()
+        if self.timelimit > 0:
+            self.h.setOptionValue('time_limit', self.timelimit)
+        self.h.run()
 
 
     def interpret_model(self):
