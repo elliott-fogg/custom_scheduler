@@ -8,7 +8,7 @@ import os
 class VariableWindowsTest(object):
     def __init__(self, input_filepath, window_increase):
         self.input_filepath = input_filepath
-        self.sim = SchedulerSimulation(input_filepath)
+        self.sim = SchedulerSimulation(input_filepath, scheduler_type="gurobi")
         self.all_requests_base = deepcopy(self.sim.all_requests)
         self.test_results = {}
         self.run_varying_windows_test()
