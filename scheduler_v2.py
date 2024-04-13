@@ -23,6 +23,9 @@ class SchedulerV2(object):
 
         self.check_scheduler_type()
 
+        print(self)
+        print("Scheduling with {} solver...".format(self.scheduler_type))
+
         self.build_time = None
         self.solve_time = None
         self.interpret_time = None
@@ -30,6 +33,7 @@ class SchedulerV2(object):
         self.objective_value = None
         self.scheduled_yik_index = None
         self.scheduled_requests = None
+        self.scheduler_status = None
 
     
     def check_scheduler_type(self):
@@ -215,8 +219,9 @@ class SchedulerV2(object):
         self.build_data_structures()
         self.time_build_model()
         self.time_solve_model()
-        self.time_interpret_model()
-        return self.return_solution()
+        if self.scheduler_status == 1:
+            self.time_interpret_model()
+            return self.return_solution()
 
 
     def print_solution(self, scheduled):
@@ -241,7 +246,10 @@ class SchedulerV2(object):
 
 
     def get_total_time(self):
-        total_time = self.build_time + self.solve_time + self.interpret_time
-        if self.read_write_time != None:
-            total_time += self.read_write_time
+        try:
+            total_time = self.build_time + self.solve_time + self.interpret_time
+            if self.read_write_time != None:
+                total_time += self.read_write_time
+        except TypeError:
+            total_time = None
         return total_time
