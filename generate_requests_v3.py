@@ -82,7 +82,7 @@ class RequestGeneratorV3(object):
         self.request_count = 0
 
         # Load request pattern information
-        pattern_data = json.load(open("../archive_scraper/observation_patterns_v1.json", "r"))
+        pattern_data = json.load(open("data/observation_patterns_v1.json", "r"))
         self.observation_patterns = sorted(pattern_data.values(), key=lambda x: x["cumulative_probability"])
 
 
@@ -153,7 +153,8 @@ class RequestGeneratorV3(object):
         # Pick an availability window size
         # Pick a network of telescopes
         pattern = self.get_pattern()
-        total_pattern_length = int(sum(pattern))
+        total_pattern_length = int(sum([float(x) for x in pattern]))
+        # total_pattern_length = int(sum(pattern))
         
         # TO FIX: Work out a way of systematically generating an availability window.
         availability_window_length = int(round(((random.random() * 9) + 1) * total_pattern_length))
