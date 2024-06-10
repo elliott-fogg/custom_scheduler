@@ -5,11 +5,11 @@ from gurobipy import Env as gpEnv
 
 class SchedulerGurobi(SchedulerV2):
     def __init__(self, now, horizon, slice_size, 
-                 resources, proposals, requests, verbose=1,
-                 timelimit=0, scheduler_type=None):
+                 telescopes, proposals, requests, verbose=1,
+                 timelimit=0):
 
-        super().__init__(now, horizon, slice_size, resources, proposals,
-            requests, verbose, timelimit, scheduler_type)
+        super().__init__(now, horizon, slice_size, telescopes, proposals,
+            requests, verbose, timelimit)
 
         self.env = gpEnv(empty=True)
         self.env.setParam("OutputFlag", 0)
@@ -30,12 +30,18 @@ class SchedulerGurobi(SchedulerV2):
         requestLocations = tuplelist()
         scheduled_vars = []
 
+        print("Starting build model")
+
+        print(len(yik))
+
         for i in range(len(yik)):
             r = yik[i]
             var = m.addVar(vtype=GRB.BINARY, name="isSched_"+str(i))
             scheduled_vars.append(var)
             requestLocations.append((str(r[0]), r[1], r[2], r[3], var)) # resID, start_w_idx, priority, resource, isScheduled?
         m.update()
+
+        print("Check 1")
 
         # Constraint 4: Each request only scheduled once
         for rid in self.requests:
@@ -44,6 +50,8 @@ class SchedulerGurobi(SchedulerV2):
             m.addConstr(nscheduled <= 1, f'one_per_reqid_constraint_{rid}')
         m.update()
 
+        print("Check 2")
+
         # Constraint 3: Each timeslice should only have one request in it
         for s in aikt.keys():
             match = tuplelist()
@@ -51,6 +59,8 @@ class SchedulerGurobi(SchedulerV2):
                 match.append(requestLocations[timeslice])
             nscheduled = quicksum(isScheduled for reqid, winidx, priority, resource, isScheduled in match)
             m.addConstr(nscheduled <= 1, f"one_per_slice_constrain_{s}")
+
+        print("Check 3")
 
         objective = quicksum([isScheduled * (priority + 0.1/(winidx+1.0)) for req, winidx, priority, resource, isScheduled in requestLocations])
 

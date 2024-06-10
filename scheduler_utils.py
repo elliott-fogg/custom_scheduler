@@ -1,6 +1,6 @@
 class PossibleStart(object):
-    def __init__(self, resource, slice_starts, internal_start, slice_size):
-        self.resource = resource
+    def __init__(self, telescope, slice_starts, internal_start, slice_size):
+        self.telescope = telescope
         self.first_slice_start = slice_starts[0]
         self.all_slice_starts = slice_starts
         self.internal_start = internal_start

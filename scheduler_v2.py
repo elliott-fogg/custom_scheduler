@@ -5,26 +5,22 @@ from scheduler_utils import PossibleStart, overlap_time_segments, trim_time_segm
 import random
 import math
 import time
+import datetime as dt
+from time_intervals.intervals import Intervals
 
 
 class SchedulerV2(object):
-    def __init__(self, now, horizon, slice_size,
-                 resources, proposals, requests, verbose=1, timelimit=0,
-                 scheduler_type=None):
+    def __init__(self, now, horizon, slice_size, telescopes, 
+                 proposals, requests, verbose=1, timelimit=0):
         self.now = now
         self.horizon = horizon
+        self.horizon_dt = now + dt.timedelta(seconds=horizon)
         self.slice_size = slice_size
-        self.resources = resources
+        self.telescopes = telescopes
         self.proposals = proposals
         self.requests = requests
         self.verbose_level = verbose
         self.timelimit = timelimit
-        self.scheduler_type = scheduler_type
-
-        self.check_scheduler_type()
-
-        print(self)
-        print("Scheduling with {} solver...".format(self.scheduler_type))
 
         self.build_time = None
         self.solve_time = None
@@ -34,6 +30,13 @@ class SchedulerV2(object):
         self.scheduled_yik_index = None
         self.scheduled_requests = None
         self.scheduler_status = None
+
+        # print("NOW", now)
+        # print("HORIZON", horizon)
+        # print("SLICE_SIZE", slice_size)
+        # print("TELESCOPES", telescopes)
+        # print("PROPOSALS", proposals)
+        # print("REQUESTS", requests)
 
     
     def check_scheduler_type(self):
@@ -45,73 +48,123 @@ class SchedulerV2(object):
             print(text)
 
 
+    def apply_occupied_telescope_times(self):
+        self.occupied_telescopes = {}
+        for telescope, occupied_dt in self.telescopes.items():
+            if occupied_dt != None:
+                self.occupied_telescopes[telescope] = Intervals([(occupied_dt, self.now + self.horizon_dt)])
+
+
     def calculate_free_windows(self):
-        for i, r in self.requests.items():
-            fwd = {}
-            for resource in r["windows"]:
-                if resource in self.resources:
-                    fwd[resource] = trim_time_segments(overlap_time_segments(self.resources[resource],
-                                                          r["windows"][resource]),
-                                                          self.now,
-                                                          self.horizon)
+        for request_id, request in self.requests.items():
+            free_windows = {}
+            for telescope, windows in request["windows"].items():
+                if telescope in self.occupied_telescopes:
+                    free_windows[telescope] = self.occupied_telescopes[telescope].intersect([windows])
                 else:
-                    fwd[resource] = []
-            r["free_windows_dict"] = fwd
+                    free_windows[telescope] = windows
+            self.requests[request_id]["free_windows"] = free_windows
 
 
     def get_slices(self, intervals, resource, duration):
-        slice_size = self.slice_size
+        slice_alignment = 0
+        slice_length = self.slice_size
         slices = []
         internal_starts = []
-        for t in intervals: 
-            start = int(math.floor(float(t["start"])/float(slice_size))*slice_size) # Start of the time_slice that this starts in
-            internal_start = t["start"]                                             # Actual start of this observation window
-            end_time = internal_start + duration                                    # End of this observation window
+        for t in intervals.toDictList():
+            if t["type"] == "start":
+                start = int(math.floor(float(t["time"].timestamp()) / float(slice_length) * slice_length))
+                internal_start = int(t["time"].timestamp())
+            elif t["type"] == "end":
+                while t["time"].timestamp() - start >= duration:
+                    tmp = range(start, internal_start+duration, slice_length)
+                    slices.append(tmp)
+                    internal_starts.append(internal_start)
+                    start += slice_length
+                    internal_start = start
 
-            while (t["end"] - start) >= duration:
-                # Generate a range of slices that will be occupied for this start and duration
-                # WARNING - HAVE TO GO BACK THROUGH REQUEST GENERATION AND MAKE SURE THESE ARE ALL INTS
-                tmp = list(range(start, internal_start+duration, slice_size))
-                slices.append(tmp)
-                internal_starts.append(internal_start)
-                start += slice_size                                # Moving on to the next potential start, so move the Start up to the next slice
-                internal_start = start                             # As only the first potential start in a window will be internal, make the 
-                                                                   # next Internal Start an external start
+        # interpolated_airmasses = np.zeros(len(internal_starts))
+
         # return slices, internal_starts
         ps_list = []
         idx = 0
         for w in slices:
-            ps_list.append(PossibleStart(resource, w, internal_starts[idx], slice_size))
+            ps_list.append(PossibleStart(resource, w, internal_starts[idx], slice_length))
             idx += 1
 
         return ps_list
+
+
+    # def get_slices(self, intervals, resource, duration):
+    #     slice_size = self.slice_size
+    #     slices = []
+    #     internal_starts = []
+    #     for t in intervals.toDictList():
+    #         start = int(math.floor(float(t["start"])/float(slice_size))*slice_size) # Start of the time_slice that this starts in
+    #         internal_start = t["start"]                                             # Actual start of this observation window
+    #         end_time = internal_start + duration                                    # End of this observation window
+
+    #         while (t["end"] - start) >= duration:
+    #             # Generate a range of slices that will be occupied for this start and duration
+    #             # WARNING - HAVE TO GO BACK THROUGH REQUEST GENERATION AND MAKE SURE THESE ARE ALL INTS
+    #             tmp = list(range(start, internal_start+duration, slice_size))
+    #             slices.append(tmp)
+    #             internal_starts.append(internal_start)
+    #             start += slice_size                                # Moving on to the next potential start, so move the Start up to the next slice
+    #             internal_start = start                             # As only the first potential start in a window will be internal, make the 
+    #                                                                # next Internal Start an external start
+    #     # return slices, internal_starts
+    #     ps_list = []
+    #     idx = 0
+    #     for w in slices:
+    #         ps_list.append(PossibleStart(resource, w, internal_starts[idx], slice_size))
+    #         idx += 1
+
+    #     return ps_list
+
+
+    def calculate_total_priority(self, request):
+        proposal_id = request["proposal_id"]
+        tac_priority = self.proposals[proposal_id]
+        random.seed(request["id"])
+        perturbation_size = 0.01
+        ran = (1.0 - perturbation_size/2.0) + perturbation_size*random.random()
+
+        effective_priority = tac_priority * request["total_duration"] / 60.0 * request["ipp_value"]
+        effective_priority = min(effective_priority, 32000.0)*ran
+        return effective_priority
 
 
     def build_data_structures(self):
         yik = []
         aikt = {}
 
-        for i, r in self.requests.items():
+        self.apply_occupied_telescope_times()
+        self.calculate_free_windows()
+
+        for request_id, request in self.requests.items():
             yik_entries = []
 
-            # Calculate request_priority from proposal_priority
-            request_proposal = self.proposals[r["proposal"]]
-            tac_priority = request_proposal["tac_priority"]
-            random.seed(r["resID"]) # Set seed to allow semi-random perturbation
-            perturbation_size = 0.01 # Copied from the LCO code
-            ran = (1.0 - perturbation_size/2.0) + perturbation_size*random.random()
+            # # Calculate request_priority from proposal_priority
+            # request_proposal = self.proposals[r["proposal"]]
+            # tac_priority = request_proposal["tac_priority"]
+            # random.seed(r["resID"]) # Set seed to allow semi-random perturbation
+            # perturbation_size = 0.01 # Copied from the LCO code
+            # ran = (1.0 - perturbation_size/2.0) + perturbation_size*random.random()
 
-            # Simplified from LCO code for only NORMAL requests with no IPP.
-            effective_priority = tac_priority * r["duration"] / 60.0 
-            effective_priority = min(effective_priority, 32000.0)*ran
-            self.requests[i]["effective_priority"] = effective_priority
+            # # Simplified from LCO code for only NORMAL requests with no IPP.
+            # effective_priority = tac_priority * r["duration"] / 60.0 
+            # effective_priority = min(effective_priority, 32000.0)*ran
+            # self.requests[i]["effective_priority"] = effective_priority
+
+            effective_priority = self.calculate_total_priority(request)
 
             # Determine possible_starts, and sort
             possible_starts = []
-            for resource in r["free_windows_dict"].keys():
-                possible_starts.extend(self.get_slices(r["free_windows_dict"][resource], resource, r["duration"]))
+            for telescope, free_windows in request["free_windows"].items():
+                possible_starts.extend(self.get_slices(free_windows, telescope, request["total_duration"]))
             possible_starts.sort()
-            self.requests[i]["possible_starts"] = possible_starts
+            self.requests[request_id]["possible_starts"] = possible_starts
         
             # Create Yik Entry for request
             w_idx = 0
@@ -119,12 +172,12 @@ class SchedulerV2(object):
                 yik_idx = len(yik)
                 yik_entries.append(yik_idx)
                 scheduled = 0 # Option to set to 1 for a Warm Start would go here
-                yik.append([r["resID"], w_idx, effective_priority, ps.resource, scheduled, ps])
+                yik.append([request["id"], w_idx, effective_priority, ps.telescope, scheduled, ps])
                 w_idx += 1
         
                 # Create aikt entry for each possible start
                 for s in ps.all_slice_starts:
-                    slice_hash = f"resource_{ps.resource}_start_{repr(s)}_length_{repr(self.slice_size)}"
+                    slice_hash = f"resource_{ps.telescope}_start_{repr(s)}_length_{repr(self.slice_size)}"
                     if slice_hash not in aikt:
                         aikt[slice_hash] = []
                     aikt[slice_hash].append(yik_idx)
@@ -215,10 +268,14 @@ class SchedulerV2(object):
 
 
     def run(self):
-        self.calculate_free_windows()
+        # self.calculate_free_windows()
+        print("Building data structures")
         self.build_data_structures()
+        print("Building Model")
         self.time_build_model()
+        print("Solving Model")
         self.time_solve_model()
+        print("Model Solved.")
         if self.scheduler_status == 1:
             self.time_interpret_model()
             return self.return_solution()

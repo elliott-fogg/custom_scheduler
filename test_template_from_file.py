@@ -11,6 +11,91 @@ import random
 import pprint
 import re
 import pandas as pd
+import pickle
+import rise_set
+
+
+class PerformanceTest(object):
+    def __init__(self, input_dir, output_dir, test_name, scheduler_type="gurobi", timelimit=0):
+        self.input_folder = os.path.join(input_dir, test_name)
+        self.output_folder = os.path.join(output_dir, test_name)
+        os.makedirs(self.output_folder, exist_ok=True)
+        self.timelimit = timelimit
+        self.scheduler_type = scheduler_type
+
+        all_input_files = os.listdir(self.input_folder)
+        self.input_files = self.check_input_files(all_input_files)
+
+        self.total_iterations = len(self.input_files)
+        self.count = 0
+
+
+    def check_input_files(self, file_list):
+        completed_files = os.listdir(self.output_folder)
+
+        input_files = []
+        for f in file_list:
+            if f in completed_files:
+                print("File completed:", f)
+            else:
+                input_files.append(f)
+        print(len(input_files), " files remaining.")
+        return input_files
+
+
+    def test_loop(self, input_filename):
+        input_filepath = os.path.join(self.input_folder, input_filename)
+        input_data = pickle.load(open(input_filepath, "rb"))
+        sim = SchedulerSimulation(data = input_data, scheduler_type=self.scheduler_type, timelimit=self.timelimit)
+
+        next_events = sim.get_next_events()
+        sim.process_event_group(next_events)
+        scheduler_data = sim.get_scheduler_info()
+        scheduler = sim.Scheduler(now=scheduler_data["now"], 
+                    horizon=scheduler_data["horizon"],
+                    slice_size=scheduler_data["slice_size"],
+                    resources=scheduler_data["resources"],
+                    proposals=scheduler_data["proposals"],
+                    requests=scheduler_data["requests"],
+                    timelimit=self.timelimit,
+                    scheduler_type=self.scheduler_type
+        )
+        scheduler.run()
+
+        output = {
+            "build": scheduler.build_time,
+            "solve": scheduler.solve_time,
+            "interpret": scheduler.interpret_time,
+            "total_time": scheduler.get_total_time(),
+            "scheduler_type": self.scheduler_type,
+            "input_file": input_file,
+            "input_folder": self.input_folder
+        }
+        return json.dumps(output)
+
+
+    def run(self):
+        for filename in self.input_files:
+            self.write(filename)
+            output = self.test_loop(filename)
+            self.save_results(output, filename)
+        print("\nTest Complete.")
+
+
+    def save_results(self, output_data, filename):            
+        output_filepath = os.path.join(self.output_folder, filename)
+        with open(output_filepath, "w") as f:
+            f.write("{}".format(output_data))
+
+
+    def write(self, filename):
+        self.count += 1
+        print("{} / {} - {} - {}".format(self.count, self.total_iterations, filename, 
+                                         dt.datetime.now().strftime("%H:%M:%S %d-%m-%Y")))
+
+
+
+
 
 
 class AltPerformanceTest(object):

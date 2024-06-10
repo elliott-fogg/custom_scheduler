@@ -4,11 +4,11 @@ from gurobipy import tuplelist
 
 class SchedulerCPSAT(SchedulerV2):
     def __init__(self, now, horizon, slice_size, 
-                 resources, proposals, requests, verbose=1,
-                 timelimit=0, scheduler_type=None):
+                 telescopes, proposals, requests, verbose=1,
+                 timelimit=0):
 
-        super().__init__(now, horizon, slice_size, resources, proposals,
-            requests, verbose, timelimit, scheduler_type)
+        super().__init__(now, horizon, slice_size, telescopes, proposals,
+            requests, verbose, timelimit)
 
 
     def check_scheduler_type(self):

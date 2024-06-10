@@ -4,11 +4,11 @@ from gurobipy import tuplelist
 
 class SchedulerPulp(SchedulerV2):
     def __init__(self, now, horizon, slice_size, 
-                 resources, proposals, requests, verbose=0,
-                 timelimit=0, scheduler_type=None):
+                 telescopes, proposals, requests, verbose=0,
+                 timelimit=0):
 
-        super().__init__(now, horizon, slice_size, resources, proposals,
-                         requests, verbose, timelimit, scheduler_type)
+        super().__init__(now, horizon, slice_size, telescopes, proposals,
+                         requests, verbose, timelimit)
 
 
     def check_scheduler_type(self):
@@ -99,3 +99,28 @@ class SchedulerPulp(SchedulerV2):
         for i in range(len(self.yik)):
             if self.scheduled_vars[i].value() == 1:
                 self.schedule_yik_index.append(i)
+
+
+def SchedulerCBC(SchedulerPulp):
+    def getSolver(self):
+        return "PULP_CBC_CMD"
+
+
+def SchedulerSCIP(SchedulerPulp):
+    def getSolver(self):
+        return "SCIP_CMD"
+
+
+def SchedulerHighsCMD(SchedulerPulp):
+    def getSolver(self):
+        return "SCIP_CMD"
+
+
+def SchedulerGurobiPulp(SchedulerPulp):
+    def getSolver(self):
+        return "GUROBI"
+
+
+def SchedulerGurobiPulpCMD(SchedulerPulp):
+    def getSolver(self):
+        return "GUROBI_CMD"
