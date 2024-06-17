@@ -2,23 +2,19 @@ from scheduler_v2 import SchedulerV2
 from gurobipy import Model, GRB, tuplelist, quicksum
 from gurobipy import read as gurobi_read_model
 from gurobipy import Env as gpEnv
+from collections import defaultdict
 
 class SchedulerGurobi(SchedulerV2):
     def __init__(self, now, horizon, slice_size, 
                  telescopes, proposals, requests, verbose=1,
-                 timelimit=0):
+                 timelimit=0, previous_results=None):
 
         super().__init__(now, horizon, slice_size, telescopes, proposals,
-            requests, verbose, timelimit)
+            requests, verbose, timelimit, previous_results)
 
         self.env = gpEnv(empty=True)
         self.env.setParam("OutputFlag", 0)
         self.env.start()
-
-
-    def check_scheduler_type(self):
-        if self.scheduler_type != "gurobi":
-            print("ERROR: Mismatched scheduler_type. '{}' should be 'gurobi'.".format(scheduler_type))
 
 
     def build_model(self):
@@ -29,48 +25,44 @@ class SchedulerGurobi(SchedulerV2):
 
         requestLocations = tuplelist()
         scheduled_vars = []
+        vars_by_req_id = defaultdict(list)
 
-        print("Starting build model")
-
-        print(len(yik))
-
+        # Decision Variable must be binary
         for i in range(len(yik)):
             r = yik[i]
             var = m.addVar(vtype=GRB.BINARY, name="isSched_"+str(i))
+            var.start = r[4]
             scheduled_vars.append(var)
-            requestLocations.append((str(r[0]), r[1], r[2], r[3], var)) # resID, start_w_idx, priority, resource, isScheduled?
+            requestLocations.append((r[0], r[1], r[2], r[3], var)) # resID, start_w_idx, priority, resource, isScheduled?
+            vars_by_req_id[r[0]].append(([r[0], r[1], r[2], r[3], var]))
         m.update()
 
-        print("Check 1")
-
-        # Constraint 4: Each request only scheduled once
-        for rid in self.requests:
-            match = requestLocations.select(rid, '*', '*', '*', '*', '*')
-            nscheduled = quicksum([isScheduled for reqid, wnum, priority, resource, isScheduled in match])
-            m.addConstr(nscheduled <= 1, f'one_per_reqid_constraint_{rid}')
-        m.update()
-
-        print("Check 2")
-
-        # Constraint 3: Each timeslice should only have one request in it
-        for s in aikt.keys():
-            match = tuplelist()
-            for timeslice in aikt[s]:
+        # Constraint 3: No more than 1 request should be scheduled in each (timeslice, resource)
+        # self.aikt.keys() indexes the requests that occupy each (timeslice, resource)
+        for s in sorted(self.aikt.keys()):
+            match = []
+            for timeslice in self.aikt[s]:
                 match.append(requestLocations[timeslice])
-            nscheduled = quicksum(isScheduled for reqid, winidx, priority, resource, isScheduled in match)
-            m.addConstr(nscheduled <= 1, f"one_per_slice_constrain_{s}")
+            nscheduled1 = quicksum([isScheduled for reqid, wnum, priority, resource, isScheduled in match])
+            m.addConstr(nscheduled1 <= 1, f'one_per_slice_constraint_{s}')
+        m.update()
 
-        print("Check 3")
+        # Constraint 2: No request should be scheduled more than once
+        for reqid in self.requests:
+            match = vars_by_req_id[reqid]
+            nscheduled2 = quicksum([isScheduled for reqid, wnum, priority, resource, isScheduled in match])
+            m.addConstr(nscheduled2 <= 1, f'one_per_reqid_constraint_{reqid}')
+        m.update()
 
-        objective = quicksum([isScheduled * (priority + 0.1/(winidx+1.0)) for req, winidx, priority, resource, isScheduled in requestLocations])
+        objective = quicksum([isScheduled*priority for req, winidx, priority, resource, isScheduled in requestLocations])
 
         m.setObjective(objective)
         m.modelSense = GRB.MAXIMIZE
 
-        # Implement a timelimit? (Do I actually want to do this?)
-        timelimit = 0 # NOTE: Hardcode out for now.
-        if timelimit > 0:
-            m.params.timeLimit = timelimit
+        # # Implement a timelimit? (Do I actually want to do this?)
+        # timelimit = 0 # NOTE: Hardcode out for now.
+        # if timelimit > 0:
+        #     m.params.timeLimit = timelimit
 
         # Set the tolerance of the solution
         m.params.MIPGap = 0.01
@@ -85,6 +77,7 @@ class SchedulerGurobi(SchedulerV2):
         m.update()
 
         self.model = m
+        self.requestLocations = requestLocations
         self.log("Model constructed", 1)
 
 
@@ -94,6 +87,7 @@ class SchedulerGurobi(SchedulerV2):
             print("Model Status not optimal:", self.model.Status)
             return
         self.log("Model optimized", 1)
+        return True
 
 
     def interpret_model(self):
