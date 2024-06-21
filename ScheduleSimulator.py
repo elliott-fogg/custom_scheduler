@@ -9,9 +9,6 @@ import os
 import datetime as dt
 from scheduler_utils import TelescopeEvent, RequestInjection, cut_time_segments, trim_time_segments
 
-# TO FIX: modify the functions in scheduler_utils.py so that they do not require both a start and end
-# point to cut time segments from only 1 direction (e.g. clipping them to 'now').
-
 class SchedulerSimulation(object):
     def __init__(self, filepath, timelimit=0, scheduler_type="gurobi",
                  slice_size=300, stepsize=900, horizon_days=None):
@@ -21,8 +18,17 @@ class SchedulerSimulation(object):
                                         # time in the Scheduler.
         self.stepsize = stepsize    # Time in seconds to step the simulation forward
                                     # between each run.
+        self.input_filepath = filepath
+        self.create_output_location()
         self.load_data_from_file(filepath)
         self.horizon = horizon_days * 24 * 60 * 60
+
+
+    def create_output_location(self):
+        input_folder, filename = os.path.split(self.input_filepath)
+        output_folder = input_folder.replace("input_files", "output_files")
+        os.makedirs(output_folder, exist_ok=True)
+        self.output_filepath = os.path.join(output_folder, filename)
 
 
     def get_scheduler(self, scheduler_type):
@@ -47,10 +53,10 @@ class SchedulerSimulation(object):
         self.horizon = data["horizon"]  # Horizon time in seconds
         self.telescopes = data["telescopes"]    # Dictionary of telescope names
         self.all_requests = data["all_requests"]    # Dictionary of request information
-        self.initial_requests = data["initial_requests"]    # List of requests that start loaded
+        # self.initial_requests = data["initial_requests"]    # List of requests that start loaded
         self.proposals = data["proposals"]  # Proposal data
-        self.request_injections = data["request_injections"]    # DF of {"time": dt, "request": id} for requests added to the simulator
-        self.telescope_closures = data["telescope_closures"]    # DF of {"start": dt, "end": dt, "telescope": name} for telescope closures
+        # self.request_injections = data["request_injections"]    # DF of {"time": dt, "request": id} for requests added to the simulator
+        # self.telescope_closures = data["telescope_closures"]    # DF of {"start": dt, "end": dt, "telescope": name} for telescope closures
 
         # Clear telescopes with 'igla' domes
         # self.telescopes = {mask_name: real_name for mask_name, real_name in data["telescopes"].items() if 'igla' not in real_name}
@@ -68,6 +74,8 @@ class SchedulerSimulation(object):
 
         # Results
         self.results = {}
+
+        print("Sim start:", self.sim_start, ", end:", self.sim_end)
 
         
     def get_current_telescopes(self):
@@ -107,9 +115,14 @@ class SchedulerSimulation(object):
         # Check which telescopes are available
         # schedulable_request_data = self.all_requests[self.all_requests["id"].isin(self.schedulable_requests)]
 
+        # Make sure the scheduler horizon caps to the end of the semester (simulation run)
+        td_to_end_of_simulation = self.sim_end - self.now
+        seconds_to_end_of_simulation = td_to_end_of_simulation.days*24*60*60 + td_to_end_of_simulation.seconds
+        scheduler_horizon = min(self.horizon, seconds_to_end_of_simulation)
+
         self.scheduler = self.Scheduler(
             now=self.now,
-            horizon=self.horizon,
+            horizon=scheduler_horizon,
             slice_size=self.slice_size,
             telescopes=self.current_telescopes,
             proposals=self.proposals,
@@ -123,14 +136,31 @@ class SchedulerSimulation(object):
         self.current_schedule = current_schedule
 
 
-    def check_telescope_closures(self):
-        pass
+    def run_scheduler_all(self):
+        self.scheduler = self.Scheduler(
+            now=self.sim_start,
+            horizon=self.sim_end,
+            slice_size=self.slice_size,
+            telescope=self.current_telescopes,
+            proposals=self.proposals,
+            requests=self.all_requests.to_dict(orient="index"),
+            verbose=0,
+            timelimit=self.timelimit,
+            previous_results={}
+        )
+
+        optimal_schedule = self.scheduler.run()
+        return optimal_schedule
+
+
+    # def check_telescope_closures(self):
+    #     pass
 
 
     def resolve_executing_requests(self):
         ended = []
         for request_id, request in self.executing_requests.items():
-            if request["end"] < self.now:
+            if request["end"] <= self.now:
                 # Request has finished executing, move to completed_requests
                 self.completed_requests[request_id] = request
                 ended.append(request_id)
@@ -143,11 +173,11 @@ class SchedulerSimulation(object):
     def resolve_scheduled_requests(self):
         current_schedule = self.current_schedule["scheduled"]
         for request_id, request in current_schedule.items():
-            if request["start"] > self.now:
+            if request["start"] >= self.now:
                 # Request has not started yet, ignore
                 continue
 
-            elif request["end"] <= self.now:
+            elif request["end"] < self.now:
                 # Request has already finished, add it to completed_requests.
                 self.completed_requests[request_id] = request
 
@@ -161,6 +191,7 @@ class SchedulerSimulation(object):
         for request_id, request in self.executing_requests.items():
             telescope = request["resource"]
             if telescope in self.occupied_telescopes:
+                print()
                 print("ERROR: Multiple requests currently executing on the same telescope!")
                 print(request)
                 print(self.occupied_telescopes[telescope])
@@ -172,8 +203,8 @@ class SchedulerSimulation(object):
         # Step time forward
         self.now += dt.timedelta(seconds=self.stepsize)
 
-        # Check for telescope closures
-        self.check_telescope_closures()
+        # # Check for telescope closures
+        # self.check_telescope_closures()
 
         # Resolve executing requests
         self.resolve_executing_requests()
@@ -199,6 +230,10 @@ class SchedulerSimulation(object):
             self.step_simulation()
 
             step_count += 1
+
+        self.results["final_completed_requests"] = self.completed_requests
+        self.results["final_schedule"] = self.current_schedule
+        self.save_results()
         return self.completed_requests
 
 
@@ -305,3 +340,8 @@ class SchedulerSimulation(object):
 
             step_count += 1
         return self.completed_requests
+
+
+    def save_results(self):
+        pickle.dump(self.results, open(self.output_filepath, "wb"))
+        print("Saved simulation output to:", self.output_filepath)
