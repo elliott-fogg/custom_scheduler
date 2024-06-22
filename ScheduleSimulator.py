@@ -57,6 +57,7 @@ class SchedulerSimulation(object):
         self.proposals = data["proposals"]  # Proposal data
         # self.request_injections = data["request_injections"]    # DF of {"time": dt, "request": id} for requests added to the simulator
         # self.telescope_closures = data["telescope_closures"]    # DF of {"start": dt, "end": dt, "telescope": name} for telescope closures
+        self.dataset_id = data["dataset_id"]
 
         # Clear telescopes with 'igla' domes
         # self.telescopes = {mask_name: real_name for mask_name, real_name in data["telescopes"].items() if 'igla' not in real_name}
@@ -231,8 +232,6 @@ class SchedulerSimulation(object):
 
             step_count += 1
 
-        self.results["final_completed_requests"] = self.completed_requests
-        self.results["final_schedule"] = self.current_schedule
         self.save_results()
         return self.completed_requests
 
@@ -343,5 +342,11 @@ class SchedulerSimulation(object):
 
 
     def save_results(self):
-        pickle.dump(self.results, open(self.output_filepath, "wb"))
+        results = {
+            "final_completed_requests": self.completed_requests,
+            "final_schedule": self.current_schedule,
+            "dataset_id": self.dataset_id
+        }
+
+        pickle.dump(results, open(self.output_filepath, "wb"))
         print("Saved simulation output to:", self.output_filepath)
