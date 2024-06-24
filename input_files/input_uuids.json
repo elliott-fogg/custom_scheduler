@@ -26,5 +26,9 @@
     "input_files/vwt/vwt_2020-08.pkl": "31cb8f52-a584-46f1-8700-6edfc7b6628f",
     "input_files/vwt/vwt_2021-02.pkl": "1f2549f6-3759-4371-8123-de5537285c5e",
     "input_files/vwt/vwt_2021-08.pkl": "6ca7c855-0eed-434c-b2e9-efeee8edc448",
-    "input_files/vwt/vwt_2022-02.pkl": "366c73d2-b40f-4e6e-af65-fe92d349503f"
+    "input_files/vwt/vwt_2022-02.pkl": "366c73d2-b40f-4e6e-af65-fe92d349503f",
+    "input_files/perfect/perfect_2020-08-01.pkl": "fb39e641-0acb-40ee-8aba-6d69214d1854",
+    "input_files/perfect/perfect_2021-02-1.pkl": "384e781c-a564-4b56-a93e-14975252b7f8",
+    "input_files/perfect/perfect_2021-05-01.pkl": "37dc0676-9655-42df-a4a7-b6671f3354d3",
+    "input_files/perfect/perfect_2022-11-01.pkl": "41921304-fa69-4849-a0a1-f02669d605f8"
 }
