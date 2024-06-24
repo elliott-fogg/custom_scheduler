@@ -138,11 +138,16 @@ class SchedulerSimulation(object):
 
 
     def run_scheduler_all(self):
+        self.get_current_telescopes()
+
+        horizon_dt = self.sim_end - self.sim_start
+        horizon_seconds = horizon_dt.days*24*60*60 + horizon_dt.seconds
+
         self.scheduler = self.Scheduler(
             now=self.sim_start,
-            horizon=self.sim_end,
+            horizon=horizon_seconds,
             slice_size=self.slice_size,
-            telescope=self.current_telescopes,
+            telescopes=self.current_telescopes,
             proposals=self.proposals,
             requests=self.all_requests.to_dict(orient="index"),
             verbose=0,
