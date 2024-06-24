@@ -158,7 +158,7 @@ class SchedulerSimulation(object):
         optimal_schedule = self.scheduler.run()
 
         split_filepath = self.output_filepath.split(".")
-        split_filepath.insert(-1, "_perfect")
+        split_filepath[0] += "_perfect"
         optimal_filepath = ".".join(split_filepath)
         pickle.dump(optimal_schedule, open(optimal_filepath, "wb"))
         print("Saved Optimal Schedule to:", optimal_filepath)
