@@ -1,8 +1,8 @@
 # from gurobipy import Model, GRB, tuplelist, quicksum
 from scheduler_gurobi import SchedulerGurobi
-from scheduler_cpsat import SchedulerCPSAT
-from scheduler_highs import SchedulerHighs
-from scheduler_pulp import SchedulerCBC, SchedulerSCIP, SchedulerGurobiPulp, SchedulerGurobiPulpCMD
+# from scheduler_cpsat import SchedulerCPSAT
+# from scheduler_highs import SchedulerHighs
+# from scheduler_pulp import SchedulerCBC, SchedulerSCIP, SchedulerGurobiPulp, SchedulerGurobiPulpCMD
 import json
 import pickle
 import os
@@ -32,16 +32,17 @@ class SchedulerSimulation(object):
 
 
     def get_scheduler(self, scheduler_type):
-        scheduler_types = {
-            "gurobi": SchedulerGurobi,
-            "cpsat": SchedulerCPSAT,
-            "highs": SchedulerHighs,
-            "cbc": SchedulerCBC,
-            "scip": SchedulerSCIP,
-            "gurobi_pulp": SchedulerGurobiPulp,
-            "gurobi_pulp_cmd": SchedulerGurobiPulpCMD
-        }
-        return scheduler_types[scheduler_type]
+        # scheduler_types = {
+        #     "gurobi": SchedulerGurobi,
+        #     "cpsat": SchedulerCPSAT,
+        #     "highs": SchedulerHighs,
+        #     "cbc": SchedulerCBC,
+        #     "scip": SchedulerSCIP,
+        #     "gurobi_pulp": SchedulerGurobiPulp,
+        #     "gurobi_pulp_cmd": SchedulerGurobiPulpCMD
+        # }
+        # return scheduler_types[scheduler_type]
+        return SchedulerGurobi
 
 
     def load_data_from_file(self, filepath):
@@ -229,18 +230,18 @@ class SchedulerSimulation(object):
 
     def run_simulation(self):
         total_steps = (self.sim_end - self.sim_start) / dt.timedelta(seconds=self.stepsize)
-        step_count = 0
+        self.step_count = 0
 
         while self.now < self.sim_end:
-            if step_count % 10 == 0:
-                print(f"{step_count} / {total_steps} - {self.now}")
+            if self.step_count % 10 == 0:
+                print(f"{self.step_count} / {total_steps} - {self.now}")
 
             self.get_current_telescopes()
             self.get_schedulable_requests()
             self.run_scheduler()
             self.step_simulation()
 
-            step_count += 1
+            self.step_count += 1
 
         self.save_results()
         return self.completed_requests
@@ -360,3 +361,77 @@ class SchedulerSimulation(object):
 
         pickle.dump(results, open(self.output_filepath, "wb"))
         print("Saved simulation output to:", self.output_filepath)
+
+
+
+class SimulationRunner(object):
+    def __init__(self, input_filepath):
+        self.input_filepath = input_filepath
+        self.sim = None
+
+    def run_from_file(input_filepath):
+        filepath_list = list(pathlib.Path(input_filepath).parts)
+        output_filepath_list = filepath_list
+        output_filepath_list[0] = "output_files"
+        output_path = os.path.join(*output_filepath_list)
+
+        filename = filepath_list[-1]
+
+        # Check for completed file
+        if os.path.isfile(output_path):
+            print(input_filepath, " - Simulation already run.")
+        else:
+            print("Running simulation for:", input_filepath)
+            output_folder = os.path.dirname(output_path)
+            filename = os.path.basename(input_filepath)
+            all_output_file_list = [f for f in os.listdir(output_folder) if filename in f]
+
+            if len(all_output_file_list) > 0:
+                temp_nums = [(f, int(re.match(r"^TEMP(\d+)_", f).groups(0)[0])) for f in all_output_file_list]
+                most_recent = max(temp_nums, key=lambda x: x[1])[0]
+                print("Loading Temp file: ", most_recent)
+                self.sim = pickle.load(open(most_recent, "rb"))
+
+            else:
+                self.sim = SchedulerSimulation(input_filepath, horizon_days=7)
+                print("Running from the beginning.")
+
+            self.run_simulation()
+
+    def run_simulation(self):
+        
+        try:
+            t1 = time.time()
+            self.sim.run_simulation()
+            t2 = time.time()
+            print("Simulation Completed:")
+            print("Output file:", output_path)
+            self.print_time(t1, t2)
+            print("Completion Time:", datetime.datetime.now())
+
+        except (KeyboardInterrupt, GurobiException):
+            self.save_temporary()
+
+
+    def save_temporary(self):
+        output_filepath = self.sim.output_filepath
+        step_count = self.sim.step_count
+        output_filename = os.path.basename(output_filepath)
+        output_dirpath = os.path.dirname(output_filepath)
+        temp_filename = f"TEMP{step_count}_{output_filename}"
+        temp_filepath = os.path.join(output_dirpath, temp_filename)
+        pickle.dump(sim, open(temp_filepath, "wb"))
+        print("Simulation saved to temporary file: ", temp_filepath)
+        
+
+    def print_time(self, t1, t2):
+        time_taken = t2 - t1
+        minutes, seconds = divmod(time_taken, 60)
+        hours, minutes = divmod(minutes, 60)
+        days, hours = divmod(hours, 24)
+        days_text = f"{int(days)} Day, " if days > 0 else ""
+        hours_text = f"{int(hours)} Hr, " if hours > 0 else ""
+        minutes_text = f"{int(minutes)} Min, " if minutes > 0 else ""
+        seconds_text = f"{round(seconds, 1)} Secs"
+        print(days_text + hours_text + minutes_text + seconds_text)
+        print("Time Taken:", days_text + hours_text + minutes_text + seconds_text)
